@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glow Up v7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#1D9E75;--g2:#0F6E56;--g-light:#E1F5EE;
+  --bg:#F7F8FA;--surface:#FFFFFF;--border:#E8EAF0;--border2:#D0D4DC;
+  --t1:#111418;--t2:#5A6070;--t3:#9AA0AF;
+  --urgent-bg:#FEF2F2;--urgent:#C0392B;--urgent-border:#FECACA;
+  --imp-bg:#FFFBEB;--imp:#B45309;--imp-border:#FDE68A;
+  --bonus-bg:#F0FDF4;--bonus:#15803D;--bonus-border:#BBF7D0;
+  --r:10px;--r2:7px;--r3:5px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex;font-size:14px;line-height:1.5}
+
+/* SIDEBAR */
+.sidebar{width:220px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 0;position:fixed;top:0;left:0;bottom:0;z-index:10}
+.brand{padding:0 18px 20px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.brand-name{font-size:18px;font-weight:600;color:var(--t1);letter-spacing:-0.4px}
+.brand-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;margin:0 6px;border-radius:var(--r2);cursor:pointer;color:var(--t2);font-size:13px;font-weight:500;transition:all .15s}
+.nav-item i{font-size:17px;flex-shrink:0}
+.nav-item:hover{background:var(--bg);color:var(--t1)}
+.nav-item.active{background:var(--g-light);color:var(--g2)}
+.nav-item.active i{color:var(--g)}
+.sidebar-footer{margin-top:auto;padding:14px 18px 0;border-top:1px solid var(--border)}
+.progress-ring-wrap{display:flex;align-items:center;gap:12px}
+.ring-label{font-size:11px;color:var(--t3)}
+.ring-val{font-size:13px;font-weight:600;color:var(--t1);margin-top:1px}
+
+/* MAIN */
+.main{margin-left:220px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.page{display:none;padding:28px 32px;max-width:860px}
+.page.active{display:block}
+.page-hdr{margin-bottom:22px}
+.page-hdr h1{font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-0.5px}
+.page-hdr p{font-size:13px;color:var(--t2);margin-top:3px}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.stat-lbl{font-size:11px;color:var(--t3);font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.stat-val{font-size:26px;font-weight:600;color:var(--t1);margin-top:3px;letter-spacing:-1px}
+
+/* PRIORITY FILTER */
+.prio-bar{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.pf{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--t2);transition:all .15s}
+.pf:hover{border-color:var(--t3)}
+.pf.on{border-color:transparent}
+.pf.on.p-all{background:#534AB7;color:#fff}
+.pf.on.p-urgent{background:var(--urgent);color:#fff}
+.pf.on.p-important{background:var(--imp);color:#fff}
+.pf.on.p-bonus{background:var(--g);color:#fff}
+
+/* CATEGORY */
+.cat-block{margin-bottom:10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);overflow:hidden}
+.cat-head{display:flex;align-items:center;gap:10px;padding:12px 15px;cursor:pointer;user-select:none;background:var(--surface)}
+.cat-head:hover{background:var(--bg)}
+.cat-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.cat-info{flex:1}
+.cat-name{font-size:13px;font-weight:600;color:var(--t1)}
+.cat-prog{font-size:11px;color:var(--t3);margin-top:1px}
+.cat-prog-bar{flex-shrink:0;width:60px;height:4px;background:var(--bg);border-radius:2px;overflow:hidden;margin-right:4px}
+.cat-prog-fill{height:100%;background:var(--g);border-radius:2px;transition:width .3s}
+.chev{font-size:16px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.chev.open{transform:rotate(180deg)}
+.cat-body{display:none;border-top:1px solid var(--border)}
+.cat-body.open{display:block}
+
+/* SUB */
+.sub-block{border-bottom:1px solid var(--border)}
+.sub-block:last-child{border-bottom:none}
+.sub-head{display:flex;align-items:center;gap:8px;padding:9px 15px 9px 20px;cursor:pointer;user-select:none}
+.sub-head:hover{background:var(--bg)}
+.sub-name{font-size:12px;font-weight:600;color:var(--t2);flex:1}
+.sub-cnt{font-size:11px;color:var(--t3)}
+.sub-chev{font-size:13px;color:var(--t3);transition:transform .2s}
+.sub-chev.open{transform:rotate(180deg)}
+.task-list{display:none;padding:6px 15px 10px 28px;background:#FAFBFC}
+.task-list.open{display:block}
+
+/* TASK */
+.task-row{display:flex;align-items:flex-start;gap:9px;padding:5px 0;cursor:pointer;border-radius:6px;transition:background .1s}
+.task-row:hover{background:var(--bg)}
+.task-row.hidden{display:none}
+.cb{width:16px;height:16px;border:1.5px solid var(--border2);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cb.done{background:var(--g);border-color:var(--g)}
+.cb i{font-size:10px;color:white;display:none}
+.cb.done i{display:block}
+.task-txt{font-size:12.5px;color:var(--t2);line-height:1.5;flex:1}
+.task-txt.done{text-decoration:line-through;color:var(--t3)}
+.task-detail{font-size:11px;color:var(--t3);margin-top:2px;line-height:1.45}
+
+/* PRIORITY BADGES */
+.pbadge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:500;margin-left:6px;vertical-align:middle;flex-shrink:0}
+.pb-u{background:var(--urgent-bg);color:var(--urgent);border:1px solid var(--urgent-border)}
+.pb-i{background:var(--imp-bg);color:var(--imp);border:1px solid var(--imp-border)}
+.pb-b{background:var(--bonus-bg);color:var(--bonus);border:1px solid var(--bonus-border)}
+
+/* DAILY */
+.habit-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.habit-head{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--surface)}
+.habit-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.habit-name{font-size:13px;font-weight:500;color:var(--t1);flex:1}
+.streak-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--imp-bg);color:var(--imp);border:1px solid var(--imp-border);font-weight:600}
+.week-grid{display:flex;gap:5px;padding:8px 14px 12px}
+.day-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.day-lbl{font-size:9px;color:var(--t3);font-weight:500}
+.day-dot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--t2);cursor:pointer;transition:all .15s}
+.day-dot:hover{border-color:var(--g);color:var(--g)}
+.day-dot.done{background:var(--g);border-color:var(--g);color:#fff}
+.day-dot.today{border:2px solid var(--g);color:var(--g);font-weight:600}
+.day-dot.today.done{background:var(--g);color:#fff}
+.month-nav{display:flex;align-items:center;gap:8px;padding:6px 14px 0}
+.month-nav span{font-size:12px;color:var(--t2);flex:1;text-align:center;font-weight:500}
+.month-btn{background:none;border:1px solid var(--border2);border-radius:5px;padding:2px 8px;font-size:13px;cursor:pointer;color:var(--t2)}
+.month-btn:hover{background:var(--bg)}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:8px 14px 12px}
+.mgd-lbl{font-size:9px;color:var(--t3);text-align:center;padding:2px 0;font-weight:500}
+.mgd{aspect-ratio:1;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--t2);cursor:pointer;transition:all .12s;width:100%}
+.mgd:hover:not(.fut){border-color:var(--g);color:var(--g)}
+.mgd.done{background:var(--g);border-color:var(--g);color:#fff}
+.mgd.today-m{border:2px solid var(--g);color:var(--g);font-weight:600}
+.mgd.today-m.done{background:var(--g);color:#fff}
+.mgd.fut{opacity:.3;cursor:default}
+.view-toggle{display:flex;gap:4px;margin-bottom:14px;background:var(--bg);border-radius:8px;padding:3px;width:fit-content}
+.vt-btn{font-size:12px;padding:5px 14px;border-radius:6px;cursor:pointer;border:none;background:transparent;color:var(--t2);font-weight:500;font-family:inherit;transition:all .15s}
+.vt-btn.active{background:var(--surface);color:var(--t1);box-shadow:var(--shadow)}
+
+/* SPORTS */
+.sport-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px}
+.sport-top{display:flex;align-items:center;gap:11px;margin-bottom:8px}
+.sport-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sport-name{font-size:14px;font-weight:600;color:var(--t1);flex:1}
+.level-tag{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600}
+.sport-why{font-size:12px;color:var(--t2);line-height:1.55;margin-bottom:10px;padding:9px 12px;background:var(--bg);border-radius:6px;border-left:3px solid var(--g)}
+.sport-steps{display:flex;flex-direction:column;gap:5px}
+.sport-step{display:flex;align-items:flex-start;gap:9px;cursor:pointer;padding:3px 0}
+
+/* QUESTS */
+.quest-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;transition:opacity .2s}
+.quest-card.done-q{opacity:.6}
+.quest-top{display:flex;align-items:flex-start;gap:10px}
+.quest-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.quest-info{flex:1}
+.quest-name{font-size:13px;font-weight:600;color:var(--t1)}
+.quest-desc{font-size:11px;color:var(--t2);margin-top:2px;line-height:1.45}
+.quest-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--t2);white-space:nowrap;font-family:inherit;transition:all .15s}
+.quest-btn:hover{background:var(--bg)}
+.quest-btn.done{background:var(--g-light);border-color:var(--g);color:var(--g2)}
+.quest-story{font-size:11px;color:var(--t2);line-height:1.55;padding:9px 12px;background:var(--bg);border-radius:6px;margin-top:10px;font-style:italic;border-left:3px solid var(--g)}
+
+/* ADD BTN */
+.add-btn{width:100%;padding:10px;font-size:12px;color:var(--t3);background:transparent;border:1.5px dashed var(--border2);border-radius:var(--r);cursor:pointer;font-family:inherit;transition:all .15s;margin-top:8px}
+.add-btn:hover{border-color:var(--g);color:var(--g)}
+
+/* SVG ring */
+.ring-svg{transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:var(--border);stroke-width:4}
+.ring-fill{fill:none;stroke:var(--g);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .5s ease}
+
+/* Section divider */
+.section-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;padding:14px 0 8px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-name">Glow Up <span style="font-size:11px;font-weight:400;color:var(--t3)">v7</span></div>
+    <div class="brand-sub">Ta roadmap de progression</div>
+  </div>
+
+  <nav style="flex:1">
+    <div class="nav-item active" id="nav-todo" onclick="showPage('todo')">
+      <i class="ti ti-list-check"></i> Todo List
+    </div>
+    <div class="nav-item" id="nav-daily" onclick="showPage('daily')">
+      <i class="ti ti-flame"></i> Quotidien
+    </div>
+    <div class="nav-item" id="nav-sports" onclick="showPage('sports')">
+      <i class="ti ti-run"></i> Sports
+    </div>
+    <div class="nav-item" id="nav-quests" onclick="showPage('quests')">
+      <i class="ti ti-map-2"></i> Quêtes
+    </div>
+    <div class="nav-item" id="nav-guides" onclick="showPage('guides')">
+      <i class="ti ti-book-2"></i> Guides
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="progress-ring-wrap">
+      <svg width="44" height="44" class="ring-svg">
+        <circle class="ring-track" cx="22" cy="22" r="17"/>
+        <circle class="ring-fill" id="ring-fill" cx="22" cy="22" r="17" stroke-dasharray="107" stroke-dashoffset="107"/>
+      </svg>
+      <div>
+        <div class="ring-label">Progression globale</div>
+        <div class="ring-val" id="ring-val">0%</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TODO PAGE -->
+  <div class="page active" id="page-todo">
+    <div class="page-hdr">
+      <h1>Todo List</h1>
+      <p>Tes objectifs classés par priorité — urgent d'abord, bonus ensuite.</p>
+    </div>
+
+    <div class="stats-row" id="todo-stats"></div>
+
+    <div class="prio-bar">
+      <button class="pf on p-all" onclick="setPrio('all')">Tout voir</button>
+      <button class="pf p-urgent" onclick="setPrio('urgent')"><i class="ti ti-alert-circle" style="font-size:11px;vertical-align:-1px"></i> Urgent</button>
+      <button class="pf p-important" onclick="setPrio('important')"><i class="ti ti-star" style="font-size:11px;vertical-align:-1px"></i> Important</button>
+      <button class="pf p-bonus" onclick="setPrio('bonus')"><i class="ti ti-leaf" style="font-size:11px;vertical-align:-1px"></i> Bonus</button>
+    </div>
+
+    <div id="cat-list"></div>
+    <button class="add-btn" onclick="sendPrompt('Ajoute une catégorie ou tâche à ma todo list Glow Up v6')"><i class="ti ti-plus"></i> Ajouter une tâche ↗</button>
+  </div>
+
+  <!-- DAILY PAGE -->
+  <div class="page" id="page-daily">
+    <div class="page-hdr">
+      <h1>Quotidien</h1>
+      <p>Ces habitudes font la différence sur le long terme. Coche chaque jour.</p>
+    </div>
+
+    <div class="stats-row" id="daily-stats"></div>
+
+    <div class="view-toggle">
+      <button class="vt-btn active" id="vb-week" onclick="setDailyView('week')">Semaine</button>
+      <button class="vt-btn" id="vb-month" onclick="setDailyView('month')">Mois</button>
+    </div>
+
+    <div id="daily-habits"></div>
+  </div>
+
+  <!-- SPORTS PAGE -->
+  <div class="page" id="page-sports">
+    <div class="page-hdr">
+      <h1>Sports</h1>
+      <p>Des objectifs calibrés sur ton niveau réel — progression, pas découverte.</p>
+    </div>
+    <div id="sports-content"></div>
+  </div>
+
+  <!-- QUESTS PAGE -->
+  <div class="page" id="page-quests">
+    <div class="page-hdr">
+      <h1>Quêtes</h1>
+      <p>Des expériences pour avoir des histoires à raconter. Chaque quête cochée devient un chapitre.</p>
+    </div>
+    <div id="quest-count" style="font-size:12px;color:var(--t3);margin-bottom:12px"></div>
+    <div id="quests-list"></div>
+    <button class="add-btn" onclick="sendPrompt('Propose-moi 5 nouvelles quêtes originales pour ma liste Glow Up v6')"><i class="ti ti-sparkles"></i> Nouvelles quêtes ↗</button>
+  </div>
+
+</main>
+
+<!-- GUIDES PAGE (outside main, same level) -->
+<div class="page" id="page-guides" style="display:none;padding:28px 32px;max-width:860px;margin-left:220px">
+  <div class="page-hdr">
+    <h1>Guides</h1>
+    <p>Skincare, musculation, étirements, langues — tout le détail pratique.</p>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap">
+    <button class="pf on p-all" id="gt-skin" onclick="setGuide('skin')">Skincare</button>
+    <button class="pf" id="gt-gym" onclick="setGuide('gym')">Muscu</button>
+    <button class="pf" id="gt-stretch" onclick="setGuide('stretch')">Étirements</button>
+    <button class="pf" id="gt-lang" onclick="setGuide('lang')">Langues</button>
+  </div>
+  <div id="guide-skin"></div>
+  <div id="guide-gym" style="display:none"></div>
+  <div id="guide-stretch" style="display:none"></div>
+  <div id="guide-lang" style="display:none"></div>
+</div>
+
+<script>
+const TODAY = new Date();
+const TK = TODAY.toISOString().slice(0,10);
+
+function gs(k,d){try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch(e){return d}}
+function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+let checked = gs('gu7_ck',{});
+let dLog = gs('gu7_dl',{});
+let qDone = gs('gu7_qd',{});
+let sDone = gs('gu7_sd',{});
+let curPrio = 'all';
+let dailyView = 'week';
+let calM = new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
+
+// =============================================
+// DATA — Tâches enrichies avec détails
+// =============================================
+const CATS = [
+  {id:"physical",icon:"ti-barbell",bg:"#E1F5EE",ic:"#0F6E56",label:"Physical",subs:[
+    {label:"Fondations du corps",tasks:[
+      {t:"Posture : dos droit, marche assurée",p:"urgent",d:"Filme-toi de profil en marchant. Épaules en arrière, menton rentré, regard horizontal. Travailler 5 min/j de conscience posturale."},
+      {t:"Routine skincare matin & soir",p:"urgent",d:"Matin : nettoyant doux → sérum vitamine C → SPF50. Soir : nettoyant → exfoliant (2x/sem) → hydratant. Adapte selon ton type de peau."},
+      {t:"Hygiène dentaire : fil, brossage 2x/j",p:"urgent",d:"Brossage 2 min matin + soir. Fil dentaire ou brossette avant le soir. Bain de bouche optionnel. Rendez-vous dentiste tous les 6 mois."},
+      {t:"Dormir 8h — routine nocturne",p:"urgent",d:"Même heure de lever 7j/7. Pas d'écran 1h avant. Chambre fraîche (17-19°C), rideau occultant. Lire ou s'étirer avant de dormir."},
+      {t:"Boire 2L d'eau par jour (4 gourdes de 500mL)",p:"urgent",d:"Ta gourde fait 500mL → remplis-la 4 fois dans la journée. 1ère au réveil, 2ème avant midi, 3ème l'après-midi, 4ème en soirée. Simple à tracker."}, 
+      {t:"Trouver sa signature olfactive (parfum)",p:"important",d:"Teste en parfumerie, 3 familles différentes (boisé, frais, oriental). Porte sur la peau 2h avant de décider. Investis dans 1 flacon à 50-80€."},
+      {t:"Blanchiment dentaire",p:"bonus",d:"Strips dentaires 14 jours ou séance chez le dentiste. Évite le café/thé pendant le traitement. Résultat visible en 2 semaines."},
+    ]},
+    {label:"Musculation",tasks:[
+      {t:"Apprendre les bases (squat, bench, deadlift)",p:"urgent",d:"YouTube : Alan Thrall pour le deadlift, JTS Strength pour le squat. Commence léger (50% de ce que tu penses pouvoir), videographie chaque séance pour corriger."},
+      {t:"Programme 3-5 j/semaine",p:"urgent",d:"Débutant : programme Push/Pull/Legs ou Upper/Lower. Intermédiaire : 4 séances semaine. Chaque séance : 3-4 exercices, 3-4 séries, 6-12 reps. Log chaque entraînement."},
+      {t:"Muscle Up",p:"important",d:"Progression : 10 tractions strictes → tractions explosives → jumping muscle-up → muscle-up avec bande → muscle-up strict. Travail de transition au fond de la barre."},
+      {t:"Progresser sur les tractions",p:"important",d:"Test de départ. Programme : 3 séries à l'échec 3x/sem. Bande élastique si <5 reps. Ajouter 1 rep/sem. Objectif : 15 reps strict propres."},
+      {t:"Suivre mensurations et poids",p:"bonus",d:"Poids chaque lundi matin à jeun. Tour de poitrine, taille, hanches, bras, cuisses. Photo tous les 30 jours même lumière, même heure. Tableur ou appli (Strong, Hevy)."},
+    ]},
+    {label:"Style & apparence",tasks:[
+      {t:"Définir son style (inspo Pinterest)",p:"urgent",d:"Crée 3 boards Pinterest : style casual, formel, sport. Identifie 5 looks que tu veux reproduire. Détermine ta palette de couleurs personnelle (neutres + 1-2 couleurs signature)."},
+      {t:"Trier et upgrader sa garde-robe",p:"urgent",d:"Méthode KonMari : garde uniquement ce qui te donne confiance. Vends le reste (Vinted). Inventaire : combien d'ensembles complets peux-tu faire avec ce qui reste?"},
+      {t:"Assortir les couleurs",p:"important",d:"Règle de base : noir/blanc/beige/gris avec n'importe quoi. Couleurs analogues (proches sur le cercle chromatique) = sûr. Complémentaires = bold. Jamais 3 couleurs vives ensemble."},
+      {t:"Investir dans 3 pièces essentielles",p:"important",d:"Choisir selon ton style. Exemples : une bonne veste oversize, un jean straight bien coupé, une paire de sneakers propres. Qualité > quantité. Budget : 100-200€ par pièce."},
+      {t:"Travailler sa voix : placement, diction",p:"important",d:"Exercice quotidien : lire à voix haute 5 min. Grave la voix en parlant depuis le ventre, pas la gorge. YouTube : channel Eloquentia. Enregistre-toi régulièrement."},
+    ]},
+    {label:"Bien-être",tasks:[
+      {t:"Stretching / mobilité 10 min/j",p:"urgent",d:"Le soir avant de dormir : ouverture des hanches, étirement des ischio, mobilité des épaules. App : Down Dog Yoga ou routine YouTube 'morning mobility 10 min'."},
+      {t:"Alimentation équilibrée (protéines, légumes)",p:"urgent",d:"Objectif : 1.6-2g de protéines/kg de poids. Chaque assiette : 1/4 protéines, 1/4 glucides complexes, 1/2 légumes. Meal prep dimanche pour la semaine."},
+      {t:"Méditation / cohérence cardiaque 5 min/j",p:"important",d:"App : Petit Bambou ou Respirelax. Cohérence cardiaque 5-5-5 (inspire 5s, expire 5s, 5 min). Le matin ou avant un moment stressant. Effet en 8 semaines."},
+      {t:"Gestion du stress (respiration box)",p:"important",d:"Technique box breathing : inspire 4s → retiens 4s → expire 4s → retiens 4s. Répète 4x. Utilise avant un examen, une présentation, un conflit. James Clear en parle dans Atomic Habits."},
+    ]}
+  ]},
+  {id:"intellectual",icon:"ti-book",bg:"#EEEDFE",ic:"#3C3489",label:"Intellectuel",subs:[
+    {label:"Culture générale",tasks:[
+      {t:"Suivre l'actualité 10 min/jour",p:"urgent",d:"Briefing audio le matin : Brief.me ou Le Monde en 5 min. Évite les réseaux sociaux comme source principale. Diversifie : un media de gauche + un de droite pour les sujets importants."},
+      {t:"Lire 1 livre/mois",p:"urgent",d:"Commence par des livres courts (150-200 pages). Lis 20 pages/soir. Prends des notes sur ce qui te frappe. Goodreads pour tracker. Liste de départ dans 'Culture littéraire'."},
+      {t:"Histoire : grandes périodes et figures clés",p:"important",d:"Podcasts : Passé Sauvage, Les Grosses Têtes Histoire. YouTube : Nota Bene. Par ordre : Antiquité → Moyen Âge → Renaissance → Révolutions → XXe siècle. 1 période par mois."},
+      {t:"Philosophie : stoïcisme, Nietzsche vulgarisé",p:"important",d:"Start : 'La philosophie pour les nuls' puis 'Lettres à Lucilius' de Sénèque. Nietzsche : commence par 'Ainsi parlait Zarathoustra' en version commentée. Podcast : 'Philosophie' sur France Culture."},
+      {t:"Cinéma : Kubrick, Tarantino, Scorsese",p:"bonus",d:"Ordre suggéré. Kubrick : 2001, Orange mécanique, Full Metal Jacket. Tarantino : Pulp Fiction, Inglourious Basterds. Scorsese : Goodfellas, Taxi Driver. Note ce qui te touche après chaque film."},
+      {t:"Regarder 1 documentaire/semaine",p:"bonus",d:"Netflix, Arte.tv (gratuit, immense catalogue). Thèmes à explorer : nature (Planet Earth), société (Icarus), histoire (The Last Dance). Prends des notes comme pour un livre."},
+    ]},
+    {label:"Culture littéraire",tasks:[
+      {t:"Classiques (Hugo, Camus, Dostoïevski)",p:"important",d:"Ordre suggéré : L'Étranger de Camus (court, dense, parfait pour commencer), Les Misérables abrégé de Hugo, Crime et Châtiment de Dostoïevski. 1 classique tous les 2-3 mois."},
+      {t:"SF (Asimov, Herbert)",p:"bonus",d:"Start : Fondation d'Asimov (saga de 7 livres, commence par le 1er). Dune de Frank Herbert pour les aventuriers. La SF est le genre qui prédit le mieux l'avenir — utile autant que la philo."},
+      {t:"Lire 1 livre en anglais de bout en bout",p:"important",d:"Commence par un livre que tu as déjà lu en français. Ou un livre simple : 'The Alchemist' (Coelho), 'Atomic Habits' (Clear). Lis sans dictionnaire, déduis le sens du contexte."},
+      {t:"Tenir un carnet de citations",p:"bonus",d:"Carnet physique ou Notion. Pour chaque citation : le livre, l'auteur, pourquoi elle te parle. Relis ce carnet tous les 3 mois. C'est une banque de pensées à mobiliser en conversation."},
+    ]},
+    {label:"Culture musicale",tasks:[
+      {t:"Hip-Hop boom bap — J Dilla, Kendrick",p:"urgent",d:"Albums clés : 'Donuts' de J Dilla, 'good kid, m.A.A.d city' de Kendrick, 'Illmatic' de Nas. Écoute activement (casque, yeux fermés) au moins une fois chaque album."},
+      {t:"Jazz — Miles Davis, Coltrane",p:"important",d:"Start : 'Kind of Blue' de Miles Davis (l'album le plus vendu de l'histoire du jazz). Puis 'A Love Supreme' de Coltrane. Cherche le contexte historique — le jazz c'est de l'histoire des États-Unis."},
+      {t:"Rock — Led Zeppelin, Jimi Hendrix",p:"important",d:"Albums : 'Led Zeppelin IV', 'Are You Experienced' de Hendrix. Écoute les solos de guitare en cherchant la technique. YouTube : analyses de 12tone ou Adam Neely."},
+      {t:"Soul & Funk — Stevie Wonder, James Brown",p:"important",d:"'Songs in the Key of Life' de Stevie Wonder (double album, chaque chanson est un chef-d'œuvre). 'Sex Machine' de James Brown pour le groove. Le funk a tout inventé — rap, électro, R&B."},
+      {t:"Électro — Daft Punk, Disclosure",p:"important",d:"'Random Access Memories' de Daft Punk (2013, Grammy du meilleur album). 'Settle' de Disclosure. Comprends la structure électronique : build-up, drop, breakdown. C'est de la composition."},
+      {t:"Afrobeats — Burna Boy, Fela Kuti",p:"bonus",d:"'African Giant' de Burna Boy. Fela Kuti : écoute 'Zombie' (critique politique en musique). L'afrobeats est le son qui a le plus influencé la pop mondiale ces 10 ans."},
+      {t:"Classique — Beethoven, Bach",p:"bonus",d:"Entry point : 'Gymnopédies' d'Erik Satie (accessible), puis 5e symphonie de Beethoven, puis Goldberg Variations de Bach. Écoute en lisant ou en travaillant — ça restructure la pensée."},
+    ]},
+    {label:"Langues",tasks:[
+      {t:"Maintenir l'anglais — niveau C1+ déjà acquis",p:"urgent",d:"1 podcast anglais/j (Huberman Lab, Lex Fridman). Films/séries en VO sans sous-titres. L'objectif n'est plus de progresser mais de ne jamais perdre la fluidité."},
+      {t:"Italien — continuer Duolingo + intensifier",p:"urgent",d:"Duolingo quotidien déjà en cours ✓. Ajouter : Babbel pour la grammaire, podcast 'Coffee Break Italian'. Objectif A2 en 6 mois. Ne pas commencer le portugais avant A2."},
+      {t:"Maintenir l'espagnol — ne pas perdre le niveau",p:"urgent",d:"2-3 séries espagnoles/mois (La Casa de Papel). Anki 10 mots 2x/semaine. Objectif : maintenir B1 sans effort intense."},
+      {t:"Portugais — démarrer après l'italien (A2)",p:"important",d:"Commence après l'A2 en italien (langues trop proches — confusion garantie si simultanées). Duolingo brésilien + Brasilito sur YouTube. Objectif A2 en 8 mois."},
+      {t:"Séries en VO sous-titrée",p:"important",d:"Sous-titres dans la langue originale. Séries : Friends (anglais), La Casa de Papel (espagnol), Suburra (italien). Note 3 expressions par épisode."},
+    ]},
+    {label:"Maths & finances",tasks:[
+      {t:"Budget personnel mensuel",p:"urgent",d:"Règle 50/30/20 : 50% besoins, 30% envies, 20% épargne. Appli Bankin' ou tableau Excel. Note chaque dépense pendant 1 mois. Tu seras surpris de ce que tu découvres."},
+      {t:"Intérêts composés : comprendre le mécanisme",p:"important",d:"Un euro investi à 7%/an double en 10 ans (règle des 72). Comprendre cela change tout à ta relation avec l'argent. Livre : 'La semaine de 4 heures' de Tim Ferriss pour la mentalité."},
+      {t:"Bases de l'investissement (ETF, bourse)",p:"bonus",d:"ETF = fond indiciel qui copie un indice (ex : S&P 500). Moins risqué qu'une action individuelle. Applis : Trade Republic, Bourse Direct. Commence par investir 50€/mois en ETF World."},
+    ]}
+  ]},
+  {id:"skills",icon:"ti-tools",bg:"#FAECE7",ic:"#712B13",label:"Skills",subs:[
+    {label:"Skills manuelles",tasks:[
+      {t:"Premiers secours / gestes qui sauvent",p:"urgent",d:"Formation PSC1 (Prévention et Secours Civiques niveau 1) : 7h, ~20€, obligatoire pour le permis B. Apprends : position latérale de sécurité, massage cardiaque, défibrillateur. Une compétence qui peut sauver une vie."},
+      {t:"Cuisine : maîtriser 10 recettes solides",p:"urgent",d:"Bases à maîtriser : œufs de toutes les façons, pâtes (3 sauces différentes), riz pilaf, viande saisie, légumes rôtis, vinaigrette. Puis élargis avec YouTube (Chef Cyprien, Hervé Cuisine)."},
+      {t:"Crochetage",p:"important",d:"Kit débutant : 5 crochets différents (~20€ sur Amazon). YouTube : BosnianBill pour la technique. Commence par des cadenas transparents d'entraînement. Skill underground qui impressionne toujours."},
+      {t:"Coudre / réparer ses vêtements",p:"bonus",d:"Apprendre : recoudre un bouton, réparer un accroc, ourlet simple. Kit de couture basique (~10€). YouTube : Safiya Nygaard pour les bases. Extends la durée de vie de tes vêtements x3."},
+    ]},
+    {label:"Digital & Tech",tasks:[
+      {t:"Dactylographie : taper sans regarder le clavier",p:"urgent",d:"Site : Keybr.com ou Monkeytype.com. 10-15 min/j pendant 3 mois. Objectif : 60 mots/minute les yeux fermés. C'est une compétence rentable immédiatement dans tous les jobs."},
+      {t:"Comprendre le fonctionnement de l'IA",p:"urgent",d:"Start : 'Elements of AI' (cours gratuit en ligne, 30h). Comprendre : LLMs, machine learning, réseaux de neurones. Le savoir le plus rentable des 10 prochaines années."},
+      {t:"Bases de Python ou JavaScript",p:"important",d:"Python : freeCodeCamp sur YouTube (10h, complet). JS : The Odin Project (curriculum gratuit). Objectif : automatiser une tâche répétitive de ta vie. Ex : script qui renomme tes fichiers."},
+      {t:"Montage vidéo (CapCut / Premiere)",p:"important",d:"CapCut : gratuit, très simple, parfait pour débuter. Premiere : apprentissage par projets (monte tes propres vidéos). Compétence très demandée + utile pour documenter ton parcours."},
+      {t:"Photo : composition, lumière, Lightroom",p:"bonus",d:"Règles : règle des tiers, lignes directrices, profondeur de champ. Lightroom Mobile gratuit pour l'édition. Un seul preset cohérent pour ton Instagram. Photographe à imiter : analyser 3 photos/semaine."},
+      {t:"No-code : Notion, Make/Zapier",p:"bonus",d:"Notion : organisation personnelle et projets. Make : automatisation sans code (ex : quand un formulaire est rempli → email envoyé → tâche créée). 2h sur YouTube et tu gères 80% des cas."},
+    ]},
+    {label:"Arts & créativité",tasks:[
+      {t:"Dessin : proportion et perspective",p:"important",d:"Livre : 'Drawing on the Right Side of the Brain' de Betty Edwards. Exercice clé : dessiner sans regarder le papier (contour). 15 min/j pendant 30 jours. Le but n'est pas d'être artiste mais d'apprendre à voir."},
+      {t:"Beatmaking (GarageBand / FL Studio)",p:"bonus",d:"GarageBand gratuit sur Mac/iOS. FL Studio : version gratuite disponible. Start : tutoriels YouTube pour faire un boom bap en 1h. Comprendre un beat change ta façon d'écouter la musique."},
+      {t:"Calligraphie / hand lettering",p:"bonus",d:"Kit débutant : plume Pilot Parallel (~15€) + guide de base. 10 min/j d'exercices de base (bâtonnets, ovales). Utile pour les cartes, la signature, les présentations."},
+      {t:"3 tours de magie",p:"bonus",d:"Livre : 'Royal Road to Card Magic'. Start avec 3 tours de cartes simples. La magie entraîne la mémoire musculaire, la performance et la lecture des gens. Effet garanti en soirée."},
+    ]},
+    {label:"Permis — feuille de route",tasks:[
+      {t:"BSR (brevet sécurité routière) — si pas encore fait",p:"urgent",d:"Obligatoire pour conduire un scooter <50cc. 1 journée de formation en école de conduite. ~150€. Passage à 14 ans minimum. A faire DÈS QUE POSSIBLE si pas encore fait."},
+      {t:"Code de la route : réviser dès maintenant",p:"urgent",d:"App : iCode ou Auto-École. 15 questions/jour. 80% de réussite requis (40 bonnes réponses sur 40 questions, max 5 erreurs). Commence 6 mois avant de vouloir présenter."},
+      {t:"Conduite accompagnée (AAC) — s'inscrire",p:"urgent",d:"Accessible à 15 ans. Économise en moyenne 700€ par rapport au parcours classique. Inscription dans une auto-école pour la journée de code + formation. Nécessite un accompagnateur expérimenté."},
+      {t:"Permis bateau côtier (accessible à 16 ans)",p:"important",d:"Permis plaisance côtier : théorie (25 questions) + pratique. Valide jusqu'à 6 milles des côtes. Formation en 2 jours, ~250-350€. Ouvre la voie aux locations de bateaux partout en Europe."},
+      {t:"Permis A2 moto à 18 ans",p:"important",d:"Formation A2 : 7h minimum + formation pratique. Limité à 35kW (48ch). Après 2 ans, passage en A sans exam supplémentaire. Liberté totale de déplacement."},
+      {t:"Permis B voiture à 18 ans",p:"important",d:"Si AAC : ~800-1200€ au total. Sans AAC : ~1500-2000€. Passe le code avant 18 ans pour être prêt. Statistique : plus on commence jeune, plus c'est simple."},
+      {t:"Visite médicale aéronautique (PPL / ULM)",p:"important",d:"Classe 2 médicale pour le PPL, ou certificat médical light pour l'ULM. Médecin aéromédicaux agréés (liste sur le site de la DGAC). ~80-150€. Vérifier avant d'investir dans la formation."},
+      {t:"Formation théorique PPL (météo, nav, réglementation)",p:"bonus",d:"9 matières à valider. Formation en école agréée ou en autodidacte (ATO). ~300-500€ pour la formation théorique. Valable 3 ans. Passe l'examen ATPL theory à Toulouse."},
+      {t:"40h de vol — brevet pilote privé",p:"bonus",d:"Environ 8000-12000€ de formation complète. En aéroclub c'est moins cher (~6000€). Minimum 45h dont 10 solos. Vole sur Cessna 152 ou Piper PA-28 pour débuter."},
+      {t:"Permis A moto à 20 ans",p:"bonus",d:"Après 2 ans de A2 : formation de 7h en moto puissante. Aucun examen supplémentaire. Ouvre toutes les motos sans limite de puissance."},
+      {t:"Permis C poids lourds (après permis B)",p:"bonus",d:"FIMO (Formation Initiale Minimale Obligatoire) : 280h de formation. Accès à plus de 18 ans + permis B. Débouche sur une carrière de conducteur longue distance si tu aimes la liberté."},
+    ]},
+  ]},
+  {id:"business",icon:"ti-briefcase",bg:"#FAEEDA",ic:"#854F0B",label:"Business & IA",subs:[
+    {label:"Projet IA",tasks:[
+      {t:"Définir le problème / besoin utilisateur",p:"urgent",d:"Méthode : 10 interviews de 20 min avec des gens dans ta cible. Pose uniquement des questions ouvertes (pas 'aurais-tu besoin de X ?'). Note les douleurs récurrentes. Le problème que tu identifies ≠ le problème réel."},
+      {t:"Choisir la stack technique",p:"urgent",d:"Pour un projet IA : Python + FastAPI pour le backend, React ou Next.js pour le front, OpenAI API ou Anthropic Claude. Hébergement : Vercel (front) + Railway (back). Base de données : Supabase (gratuit)."},
+      {t:"MVP fonctionnel",p:"urgent",d:"MVP = la version la plus simple qui prouve que ton idée fonctionne. Aucune feature bonus. Délai max : 4 semaines. Utilise Cursor AI ou GitHub Copilot pour coder 3x plus vite. Lance avant que ce soit parfait."},
+      {t:"Bêta-testeurs : 10 retours minimum",p:"important",d:"Trouve 10 utilisateurs dans ta cible. DM direct sur LinkedIn, Reddit ou Discord. Donne l'accès gratuit en échange d'un call de 20 min. Note tout. Les bons retours portent sur le comportement, pas les opinions."},
+      {t:"Pitch deck du projet",p:"important",d:"Structure : problème → solution → marché → traction → équipe → ask. 10 slides max. Template : Guy Kawasaki ou Sequoia. Entraîne-toi à pitcher en 2 min sans slides."},
+      {t:"Propriété intellectuelle : droits et marques",p:"important",d:"Déposer une marque à l'INPI : ~190€ pour 10 ans, 1 classe. Protège le nom du projet avant de communiquer dessus publiquement. Vérifie d'abord que la marque n'est pas déjà prise."},
+    ]},
+    {label:"Entrepreneuriat",tasks:[
+      {t:"Gestion du temps : Pomodoro / time-blocking",p:"urgent",d:"Pomodoro : 25 min de focus → 5 min de pause → répète 4x → pause longue. Time-blocking : planifie chaque heure de ta journée la veille. Cal.com ou Google Calendar. Aucune tâche sans durée définie."},
+      {t:"Lire 'Rework' ou équivalent",p:"important",d:"'Rework' de Basecamp : 180 pages, tu le lis en un week-end. Messages clés : moins c'est plus, lance maintenant. Autres : 'The Lean Startup' (Ries), 'Zero to One' (Thiel). Un livre business/mois."},
+      {t:"Copywriting et marketing de base",p:"important",d:"Loi fondamentale : écrire pour le lecteur, pas pour soi. Formule AIDA : Attention → Intérêt → Désir → Action. Lis 'Cashvertising' de Whitman. Analyse 3 landing pages qui t'ont convaincu."},
+      {t:"Pitcher une idée en 2 minutes",p:"important",d:"Structure : problème → solution → pourquoi toi → appel à l'action. Enregistre-toi. Élimine les 'euh', 'bon', 'donc'. Pratique devant un miroir puis devant une vraie personne."},
+    ]},
+    {label:"Personal branding",tasks:[
+      {t:"Profil LinkedIn propre",p:"important",d:"Photo pro (fond neutre, sourire, costard ou smart casual). Titre : ce que tu fais + pour qui + résultat. About : raconte ton parcours en 3 paragraphes. Ajoute ton projet IA comme 'experience'. 500+ connexions = crédibilité."},
+      {t:"Documenter le projet sur Instagram ou X",p:"bonus",d:"Build in public : partage les étapes, les galères, les victoires. Audience avant le produit. X (Twitter) est le meilleur réseau pour le tech. 1 post/jour pendant 90 jours = effet boule de neige."},
+      {t:"Contacter 1 mentor ou expert/mois",p:"bonus",d:"Template DM : 'Bonjour [Prénom], j'ai lu [votre post/article sur X]. J'ai une question précise : [question]. Puis-je avoir 15 min de votre temps ?' Un expert sur cinq répond. Garde le contact."},
+    ]}
+  ]},
+  {id:"social",icon:"ti-users",bg:"#FBEAF0",ic:"#72243E",label:"Social & Communication",subs:[
+    {label:"Éloquence",tasks:[
+      {t:"Se filmer, s'écouter, s'améliorer",p:"urgent",d:"Filme chaque présentation ou discours. Regarde sans son d'abord (langage corporel). Puis avec son (ton, débit, mots parasites). Identifie UN point à améliorer par vidéo. Refais le même discours 3 fois de suite."},
+      {t:"Travailler son storytelling",p:"important",d:"Structure universelle : situation initiale → élément perturbateur → péripéties → résolution → morale. Tous tes exemples en conversation doivent suivre cette structure. Livre : 'Story' de Robert McKee."},
+      {t:"Apprendre à débattre sans s'énerver",p:"important",d:"Règle d'or : reformuler l'argument adverse avant de répondre ('Si je comprends bien, tu dis que...'). Distingue attaque d'idée et attaque de personne. Lire 'Thank You for Arguing' de Jay Heinrichs."},
+      {t:"1 présentation/mois",p:"bonus",d:"Format : 5-10 min sur un sujet que tu maîtrises, devant 2-3 amis minimum. Pitch ton projet, une idée, un livre. Filme, analyse, améliore. En 12 mois, tu auras fait 12 présentations — tu seras à l'aise."},
+    ]},
+    {label:"Charisme & relations",tasks:[
+      {t:"Écoute active",p:"urgent",d:"Règle 80/20 : écoute 80%, parle 20%. Techniques : reformuler ('donc tu veux dire que...'), questions ouvertes ('et après, qu'est-ce qui s'est passé?'), silence (ne pas combler). La plupart des gens ne t'écoutent pas — sois l'exception."},
+      {t:"Langage corporel conscient",p:"urgent",d:"Travail quotidien : poignée de main ferme (pas d'écrasement), contact visuel 60-70% du temps en conversation, sourire sincère (yeux qui plissent). 'The Definitive Book of Body Language' de Barbara Pease."},
+      {t:"Initier les conversations en premier",p:"important",d:"Règle des 3 secondes : agis avant que ton cerveau trouve une excuse. Ouvre avec un commentaire sur le contexte, pas une question bateau. 'T'as l'air de bien t'y connaître en [ce qu'il fait], c'est quoi le deal?'"},
+      {t:"Gérer un conflit calmement",p:"important",d:"Méthode DESC : Décrire les faits → Exprimer le ressenti → Spécifier ce qu'on attend → Conséquences positives si accord. Jamais d'attaque personnelle. Choisis le bon moment (pas à chaud)."},
+      {t:"Apprendre le timing de l'humour",p:"bonus",d:"L'humour vient après le lien établi, pas avant. L'autodérision est la forme la plus sûre et la plus efficace. Évite les blagues préparées — elles sonnent faux. Réagis à ce qui se passe maintenant."},
+    ]},
+    {label:"Écriture",tasks:[
+      {t:"Mails pro clairs et percutants",p:"urgent",d:"Structure : objet précis (pas 'Question') → 1 phrase de contexte → demande claire → délai si besoin → signature. Jamais plus de 150 mots. Relis toujours avant d'envoyer. Évite 'Cordialement' — dis 'Bonne journée'."},
+      {t:"Copywriting basique",p:"important",d:"Principe clé : écrire pour UN lecteur, pas 'tout le monde'. Chaque phrase doit pousser à lire la suivante. Évite l'adjectif ('excellent produit') — préfère le fait ('réduit le temps de travail de 40%')."},
+      {t:"Écrire un texte par semaine (journal, idée)",p:"bonus",d:"Format libre : 200-500 mots. Ce qui t'a appris quelque chose cette semaine, une réflexion, une observation. L'écriture clarifie la pensée. En 6 mois, tu verras ta progression intellectuelle."},
+    ]}
+  ]},
+  {id:"mindset",icon:"ti-brain",bg:"#E6F1FB",ic:"#185FA5",label:"Mindset",subs:[
+    {label:"Discipline",tasks:[
+      {t:"Morning routine (lever, sport, révision)",p:"urgent",d:"Stack de 60 min : lever → eau froide au visage → sport 20 min → douche → 20 min de lecture/révision. La séquence importe moins que la régularité. Commence à 90% — une routine imparfaite > pas de routine."},
+      {t:"No phone 1h après le lever",p:"urgent",d:"Le matin, ton cerveau est en état de créativité maximale (ondes alpha). Un coup d'œil au téléphone le passe en mode réactif pour les 2h suivantes. Utilise ce temps pour toi."},
+      {t:"Revoir ses objectifs chaque dimanche",p:"important",d:"Revue hebdomadaire : qu'est-ce qui a avancé cette semaine? Qu'est-ce qui a bloqué? Qu'est-ce que je fais différemment? 15 min le dimanche soir avec ton Glow Up ouvert. Un seul objectif prioritaire pour la semaine suivante."},
+      {t:"Journaling après un échec",p:"important",d:"Questions clés : Que s'est-il passé exactement? Quels étaient les facteurs hors de mon contrôle? Qu'est-ce que j'aurais pu faire différemment? Qu'est-ce que ça m'apprend sur moi? L'échec non analysé se répète."},
+    ]},
+    {label:"Vision & solitude",tasks:[
+      {t:"Écrire sa vision à 1 an et 5 ans",p:"urgent",d:"Sois précis : pas 'être riche' mais 'avoir 50K€ d'économies et un projet qui génère 2K€/mois'. Décris une journée type de ta vie dans 5 ans. Ce texte est ta boussole. Relis-le chaque mois."},
+      {t:"Afficher ses objectifs quelque part de visible",p:"important",d:"Post-it sur le bureau, fond d'écran, tableau vision. Ce n'est pas de la pensée magique — c'est de l'intention consciente. Ton cerveau filtre ce qu'il voit en priorité (effet Tetris)."},
+      {t:"Apprendre à être bien seul sans écran",p:"important",d:"Commence par 30 min/semaine seul sans stimulation externe (pas de musique, podcast ou téléphone). Marche, cuisine, assieds-toi. C'est dans l'ennui que les meilleures idées émergent. Ça s'entraîne."},
+      {t:"24h sans téléphone une fois par mois",p:"bonus",d:"Préviens tes contacts la veille. Planifie quelque chose de concret (rando, lecture, cuisine). La première fois est difficile, la deuxième est libératrice. Tu reprends le contrôle de ton attention."},
+    ]}
+  ]}
+];
+
+const DAILY = [
+  {id:"sport",icon:"ti-barbell",bg:"#E1F5EE",ic:"#0F6E56",label:"Sport / mouvement",tip:"Au moins 20 min d'activité physique."},
+  {id:"lecture",icon:"ti-book",bg:"#EEEDFE",ic:"#3C3489",label:"10 min de lecture",tip:"Un livre, peu importe lequel."},
+  {id:"skin",icon:"ti-droplet",bg:"#FBEAF0",ic:"#72243E",label:"Routine skincare",tip:"Matin + soir : nettoyant, hydratant, SPF le matin."},
+  {id:"langue",icon:"ti-language",bg:"#E6F1FB",ic:"#185FA5",label:"Duolingo italien + 10 mots",tip:"Italien quotidien (priorité) + révision espagnol Anki 2x/sem."},
+  {id:"media",icon:"ti-news",bg:"#FAECE7",ic:"#993C1D",label:"Actualité du jour",tip:"10 min de briefing. Brief.me ou Le Monde."},
+  {id:"nophone",icon:"ti-device-mobile-off",bg:"#F1EFE8",ic:"#5F5E5A",label:"No phone au réveil",tip:"1h sans téléphone après le réveil."},
+  {id:"eau",icon:"ti-droplet",bg:"#EAF3DE",ic:"#3B6D11",label:"4 gourdes d'eau (2L)",tip:"Gourde 500mL → 4 remplissages : réveil, midi, après-midi, soir."},
+  {id:"journal",icon:"ti-pencil",bg:"#FAEEDA",ic:"#854F0B",label:"Écriture / journal",tip:"5 min d'écriture libre. Ce qui est dans ta tête."},
+  {id:"posture",icon:"ti-spine",bg:"#E1F5EE",ic:"#0F6E56",label:"Posture consciente",tip:"3 checks dans la journée : dos droit, épaules ouvertes."},
+  {id:"dactylo",icon:"ti-keyboard",bg:"#EEEDFE",ic:"#3C3489",label:"Dactylographie 5 min",tip:"Keybr.com ou Monkeytype. Objectif : 60 mots/min."},
+  {id:"sortie",icon:"ti-run",bg:"#E1F5EE",ic:"#0F6E56",label:"Sortie longue hebdo",tip:"1x/semaine : course, natation, vélo ou rando (+45 min)."},
+];
+
+const SPORTS = [
+  {id:"boxe",icon:"ti-box",bg:"#FCEBEB",ic:"#A32D2D",name:"Boxe anglaise",tag:"Avancé",tagBg:"#E1F5EE",tagC:"#085041",
+   why:"Tu fais déjà 1 séance/semaine — l'enjeu maintenant c'est le sparring régulier et la compétition. Tu as les bases, il faut les exposer sous pression.",
+   steps:[
+    {t:"Passer à 2 séances/semaine minimum",p:"urgent",d:"Sans régularité, le niveau stagne. 2 séances = 1 technique + 1 physique. Cale ça dans ton agenda comme des rendez-vous non-négociables."},
+    {t:"Travailler le jeu de jambes et le déplacement",p:"urgent",d:"Drill : shadow boxing en se concentrant uniquement sur les pieds. Corde à sauter 10 min en début de séance. Regarder les pieds de Lomachenko sur YouTube."},
+    {t:"Sparring régulier (intensité progressive)",p:"important",d:"Commence par du sparring technique (50% d'intensité). Communique avec le partenaire avant. L'objectif n'est pas de gagner mais d'expérimenter ce qu'on a travaillé."},
+    {t:"Préparer un combat amateur / tournoi",p:"important",d:"Demande à ton coach les compétitions locales. FFBoxe recense les tournois. La préparation à un combat (8 semaines) transforme ton entraînement."},
+    {t:"Étudier les styles de boxeurs pro (Lomachenko, Ali)",p:"bonus",d:"YouTube : analyse 2-3 rounds par semaine en pause fréquente. Ce que tu ne peux pas voir en temps réel, tu le vois au ralenti."},
+  ]},
+  {id:"nata",icon:"ti-swimming",bg:"#E6F1FB",ic:"#0C447C",name:"Natation",tag:"Avancé",tagBg:"#E1F5EE",tagC:"#085041",
+   why:"Compétiteur confirmé. L'objectif n'est plus d'apprendre mais de repousser les limites — technique des virages, eau libre, endurance longue distance.",
+   steps:[
+    {t:"Maintenir 2-3 séances/semaine",p:"urgent",d:"Si une semaine tu ne nages pas, reprends dès le lundi suivant sans culpabilité. Régularité > perfection. Programme : une séance technique, une séance endurance."},
+    {t:"Travailler l'efficacité : technique de virage, départ",p:"urgent",d:"Le virage culbute bien exécuté peut faire gagner 0,5-1s par longueur en compétition. Départ du plot : travail avec les bras + position de la tête."},
+    {t:"Participer à au moins 1 compétition par saison",p:"important",d:"FFA (Fédération Française d'Athlétisme) pour les compétitions en club. Même si tu ne vises pas le podium, se confronter au chrono change l'entraînement."},
+    {t:"Nager en eau libre (lac, mer) — sortir de la piscine",p:"important",d:"L'eau libre est un autre sport : pas de ligne, courant, absence de repères visuels. Commence par 500m en lac calme. Triathlon S (750m nage) comme objectif à terme."},
+    {t:"Travailler l'endurance : 3km non-stop",p:"bonus",d:"Programme 12 semaines : ajouter 200m/semaine. Rythme confortable, nage en crawl. La respiration bilatérale (tous les 3 temps) est la clé de l'endurance."},
+  ]},
+  {id:"park",icon:"ti-shoe",bg:"#EAF3DE",ic:"#27500A",name:"Parkour / freerun",tag:"Intermédiaire",tagBg:"#FAEEDA",tagC:"#633806",
+   why:"Les bases sont là. L'étape suivante : fluidifier les enchaînements et valider le salto arrière — la figure qui marque le passage au niveau supérieur.",
+   steps:[
+    {t:"Consolider les réceptions et roulades sous pression",p:"urgent",d:"Une réception ratée à haute vitesse = blessure. Pratique les roulades dans l'herbe, puis sur mousse, puis béton. Jamais de nouvelle figure si les bases ne sont pas automatiques."},
+    {t:"Salto arrière maîtrisé (avec filet d'abord)",p:"urgent",d:"Progression : trampoline → mousse → gazon → béton (avec spotter). Ne jamais brûler les étapes. Un gymnase avec filet de réception pour les 2 premières phases."},
+    {t:"Enchaîner un run complet en extérieur",p:"important",d:"Trouve un spot de 50-100m avec 5-6 obstacles. Pratique l'enchaînement complet (pas juste obstacle par obstacle). La fluidité entre les mouvements = le vrai parkour."},
+    {t:"Apprendre le kong vault et le dash vault",p:"important",d:"Kong : saut groupé au-dessus d'un obstacle plat. Dash : extension des jambes en avant. Commence sur des obstacles bas (60-80cm). YouTube : Storror ou Ryan Doyle pour la technique."},
+    {t:"Filmer et monter un run pour Instagram",p:"bonus",d:"Setup minimal : smartphone + GoPro (ou ami avec smartphone). Montage sur CapCut. Musique + slow-motion sur les meilleures figures. Ça te force à choisir tes meilleurs spots."},
+  ]},
+  {id:"tennis",icon:"ti-ball-tennis",bg:"#FAEEDA",ic:"#633806",name:"Tennis",tag:"Intermédiaire",tagBg:"#FAEEDA",tagC:"#633806",
+   why:"Les bases sont là mais sans régularité, ça stagne. L'objectif : jouer au moins 1 fois par semaine et entrer en compétition pour progresser sous pression.",
+   steps:[
+    {t:"Jouer au moins 1x/semaine de façon régulière",p:"urgent",d:"Trouve un partenaire de niveau similaire ou légèrement supérieur. Platforms : JouezTennis.com pour trouver des partenaires. La régularité est 10x plus importante que l'intensité."},
+    {t:"Travailler le service (slice, kick)",p:"important",d:"Le service est le seul coup entièrement sous ton contrôle. 15 min d'entraînement au service en début de séance avant même d'échanger. Objectif : 65% de premières balles."},
+    {t:"Améliorer le revers à 2 mains",p:"important",d:"Le revers est souvent le point faible. Exercice : 50 revers croisés, puis 50 long de ligne. Film-toi pour vérifier le timing de la frappe (contact devant le corps)."},
+    {t:"Participer à un tournoi de club",p:"important",d:"Classe ton niveau sur le site de la FFT. Tournoi interne de club pour commencer. Le tournoi révèle des failles que l'entraînement ne montre pas."},
+    {t:"Apprendre à lire le jeu adverse",p:"bonus",d:"Observer : épaule (direction du service), préparation du revers (précoce ou tardive), position sur le terrain (au fond = coup profond). En match, observe 2 patterns et anticipe."},
+  ]},
+  {id:"surf",icon:"ti-wave-sine",bg:"#E1F5EE",ic:"#085041",name:"Surf",tag:"Avancé",tagBg:"#E1F5EE",tagC:"#085041",
+   why:"Tu es bon. L'objectif c'est le surf technique dans des conditions exigeantes : top-turn marqué, barrel, spots variés.",
+   steps:[
+    {t:"Surfer des vagues à 1m50+ régulièrement",p:"urgent",d:"La progression nécessite des vagues plus grandes. Commence en paddlant sur les vagues plus tôt que d'habitude. La peur est normale — le respect de la mer aussi."},
+    {t:"Maîtriser le top-turn et le bottom-turn",p:"urgent",d:"Bottom-turn : virage au bas de la vague qui donne l'élan pour le top-turn. Top-turn : virage au sommet qui redirige vers le bas. Ces 2 mouvements constituent 80% du surf de qualité."},
+    {t:"Apprendre le tube riding (barrel)",p:"important",d:"Ça commence par chercher des vagues creuses (beach break à marée basse). Position : accroupi, main arrière traîne dans la vague. Start au Portugal (Peniche) ou Maroc (Taghazout)."},
+    {t:"Surfer dans différents spots (beach break, reef)",p:"important",d:"Chaque type de vague demande une adaptation. Reef break : vitesse et danger. Point break : vagues longues et régulières. Voyage surf en Andalousie, Maroc ou Indonésie."},
+    {t:"Compétition locale ou heat entre amis",p:"bonus",d:"Se confronter à d'autres surfers dans un heat (20 min, 2 meilleures vagues comptent) change complètement ta lecture de l'océan."},
+    {t:"Wakeboard en parallèle (transition naturelle)",p:"bonus",d:"Le wakeboard entraîne les mêmes muscles et la même lecture de l'espace. Plus accessible (derrière un bateau, conditions contrôlées). Loue une session avant d'investir."},
+  ]},
+  {id:"bmx",icon:"ti-bike",bg:"#FAECE7",ic:"#712B13",name:"BMX / mountain bike",tag:"Débutant",tagBg:"#EEEDFE",tagC:"#3C3489",
+   why:"Le wheeling, c'est l'entrée. BMX et VTT sont l'évolution naturelle — même équilibre, même lecture du terrain, mais avec saut et descente technique.",
+   steps:[
+    {t:"Maîtriser le wheeling sur 50m",p:"urgent",d:"Technique : soulever la roue avec les jambes (pas les bras), trouver le point d'équilibre, freiner arrière pour ne pas basculer. Pratique en côte légèrement descendante pour commencer."},
+    {t:"Bunny hop et manual",p:"important",d:"Bunny hop : soulever les 2 roues simultanément (obligatoire pour le BMX). Manual : roue avant en l'air sans pédaler (équilibre pur). Ces 2 figures ouvrent toutes les autres."},
+    {t:"Piste de pump track",p:"important",d:"Le pump track est la meilleure école du vélo : virages relevés, bosses enchainées, sans pédaler. Trouve une piste pump track en ville (la plupart sont gratuites)."},
+    {t:"Descente VTT technique",p:"bonus",d:"Commence sur des sentiers verts/bleus en VTT (pas de BMX pour la descente). Loue un VTT full-suspension pour les premières descentes. La lecture du terrain sur un VTT = la même qu'en parkour."},
+    {t:"Premier saut de rampe en BMX",p:"bonus",d:"Skatepark avec petites rampes. Règle : ne jamais sauter plus haut que tu ne peux te permettre de chuter. Casque + genouillères obligatoires. Commence par les kickers (petits tremplins)."},
+  ]},
+  {id:"foot",icon:"ti-ball-football",bg:"#EAF3DE",ic:"#27500A",name:"Football",tag:"Collectif",tagBg:"#FBEAF0",tagC:"#72243E",
+   why:"Culture mondiale, intelligence collective, lecture du jeu. Un sport qui enseigne à lire l'espace et à vivre en équipe — deux compétences qui se transfèrent partout.",
+   steps:[
+    {t:"Jouer en match informel 1x/semaine",p:"urgent",d:"Footinho, Kibala, ou match avec amis. La régularité > la qualité des partenaires. Même 20 minutes, tu travailles ton instinct et ton engagement physique."},
+    {t:"Travailler les contrôles et passes courtes",p:"urgent",d:"Drill solo : passe contre un mur, contrôle, passe. 15 min/session. Le contrôle orienté (qui te prépare déjà pour la passe suivante) est ce qui distingue un joueur technique."},
+    {t:"Travailler le tir des deux pieds",p:"important",d:"Exercice : 20 frappes du pied fort, 20 du pied faible. Le pied faible ne doit pas être 50% moins fort — objectif 70-80% du pied fort. Ça se travaille en 3 mois si c'est régulier."},
+    {t:"Intégrer une équipe ou une ligue amateur",p:"important",d:"Footleo ou DirectSport pour trouver une équipe dans ta ville. La compétition régulière structure la progression. Les matchs montrent des failles que le foot informel ne révèle pas."},
+    {t:"Étudier des tactiques simples (pressing, bloc bas)",p:"bonus",d:"YouTube : Tifo Football pour les explications tactiques. Pressing haut vs bloc bas : comprendre quand chaque stratégie s'applique. La lecture du jeu commence par la tactique."},
+  ]},
+  {id:"basket",icon:"ti-ball-basketball",bg:"#FBEAF0",ic:"#72243E",name:"Basketball",tag:"Collectif",tagBg:"#FBEAF0",tagC:"#72243E",
+   why:"Sport de rue, culture, physique et intuition. Complémentaire au foot pour la lecture de l'espace. Plus vertical, plus physique dans les duels.",
+   steps:[
+    {t:"Maîtriser le dribble et le lay-up",p:"urgent",d:"Dribble sans regarder le ballon : exercice quotidien 5 min. Lay-up : 3 pas réglementaires (gauche, droite, saut ou droite, gauche, saut selon le côté). 50 lay-ups/session."},
+    {t:"Jouer en 3x3 régulièrement",p:"important",d:"Le 3x3 est beaucoup plus physique et intensif que le 5x5 — moins de place, plus de duels. Citytraq ou les spots de street basketball dans ta ville."},
+    {t:"Shoot à mi-distance",p:"important",d:"Mi-distance = 4-6m du panier. Mécanique : BEEF (Balance, Eyes, Elbow, Follow through). 100 shoots par session, des positions variées. Filmer ton shoot pour analyser le relâché."},
+    {t:"Intégrer une équipe",p:"bonus",d:"FFBB pour trouver un club. Même en N4 ou en régionale, le niveau de jeu collectif + l'entraînement structuré font progresser 3x plus vite que le street."},
+  ]},
+  {id:"karting",icon:"ti-steering-wheel",bg:"#FAEEDA",ic:"#854F0B",name:"Karting",tag:"Très avancé",tagBg:"#E1F5EE",tagC:"#085041",
+   why:"Tu es très bon en karting. L'objectif : passer à la compétition structurée et explorer les disciplines connexes (sim racing, karting shifter).",
+   steps:[
+    {t:"Participer à une compétition officielle FFSA",p:"urgent",d:"FFSA Karting recense tous les championnats régionaux. Une saison compétitive change complètement le niveau de pilotage — le chrono et les adversaires révèlent des lacunes invisibles en loisir."},
+    {t:"Travailler la régularité des trajectoires",p:"urgent",d:"En karting avancé, la régularité > la vitesse de pointe. Filme tes tours depuis le kart (GoPro sur casque). Analyse les freinages et l'apex de chaque virage."},
+    {t:"Sim racing — iRacing ou Assetto Corsa",p:"important",d:"Reconnu comme outil de préparation par les pros. iRacing (abonnement mensuel) ou Assetto Corsa Competizione (achat unique). Volant Thrustmaster T248 (~280€) pour débuter sérieusement."},
+    {t:"Stage de perfectionnement karting",p:"important",d:"1-2 jours avec moniteur professionnel. Sodi Racing, Tony Kart Academy ou circuits locaux. Investissement : 200-400€, retour immédiat sur le pilotage."},
+    {t:"Passer au kart 125cc Shifter",p:"bonus",d:"Le kart à boîte (125cc Shifter) = niveau supérieur en karting. Performances proches d'une F4. Nécessite licence FFSA et bonne expérience du karting classique."},
+  ]},
+  {id:"moto",icon:"ti-motorbike",bg:"#FAECE7",ic:"#712B13",name:"Moto — du dirt bike au permis A2",tag:"Débutant→",tagBg:"#EEEDFE",tagC:"#3C3489",
+   why:"Tu as des bases (scooter + dirt bike) — l'équilibre et les réflexes sont là. Focus : formation technique + permis A2 à 18 ans + choix de la première moto pour grand gabarit.",
+   steps:[
+    {t:"Consolider sur dirt bike / piste privée",p:"urgent",d:"Avant la route : maîtriser le point de patinage de l'embrayage, freinage progressif, courbes lentes. Le dirt bike est la meilleure école moto qui soit. Plus de balades intentionnelles off-road."},
+    {t:"S'inscrire en auto-école moto — formation A2",p:"urgent",d:"7h de formation obligatoires (ETG). Choisir une auto-école spécialisée moto. Commence la préparation du code maintenant — même code que la voiture."},
+    {t:"Passer le code de la route",p:"urgent",d:"App iCode ou Code Rousseau. 15 questions/j pendant 3-4 mois. 80% requis (max 5 erreurs sur 40 questions)."},
+    {t:"Apprendre la mécanique de base",p:"important",d:"Vidange, chaîne, pneus, réglage suspensions. YouTube : Moto Station ou Enduro Magazine. Comprendre sa moto = mieux la piloter."},
+    {t:"Choisir sa première moto A2 (35kW) pour grand gabarit",p:"important",d:"Motos A2 pour 1m87 : Kawasaki Z650, Yamaha MT-07 A2, Honda CB650R, Triumph Street Twin. Selle haute, position droite. Budget : 5000-8000€ occasion récent."},
+    {t:"Stage de pilotage sur circuit après le permis",p:"bonus",d:"1 jour sur circuit (Carole, Lédenon, Magny-Cours Club) après l'obtention. Progression rapide en sécurité. ~300-500€."},
+  ]},
+];
+
+const QUESTS = [
+  {id:"q1",icon:"ti-map-pin",bg:"#EEEDFE",ic:"#3C3489",name:"Partir seul en ville inconnue",desc:"Train, exploration, restaurant seul. Une journée entière sans plan préétabli.",story:"Le jour où j'ai appris à me suffire à moi-même."},
+  {id:"q2",icon:"ti-sunrise",bg:"#FAEEDA",ic:"#854F0B",name:"Voir un lever de soleil depuis un sommet",desc:"Partir de nuit, arriver à l'aube. Peu importe la montagne.",story:"On a failli rebrousser chemin à 3h du matin..."},
+  {id:"q3",icon:"ti-microphone",bg:"#FAECE7",ic:"#993C1D",name:"Parler sur scène (slam, freestyle, pitch)",desc:"Open mic, concours, ou devant 10 personnes. Peu importe le format.",story:"Ma voix a tremblé, mais j'ai continué."},
+  {id:"q4",icon:"ti-camera",bg:"#E6F1FB",ic:"#185FA5",name:"Projet photo sur 30 jours",desc:"1 photo/jour sur un thème choisi. Publier ou garder pour toi.",story:"30 jours à regarder le monde différemment."},
+  {id:"q5",icon:"ti-swimming",bg:"#E1F5EE",ic:"#0F6E56",name:"Nager en eau libre sous la pluie",desc:"Lac, mer, rivière. Dans les vraies conditions.",story:"L'eau froide m'a réveillé plus vite que n'importe quel café."},
+  {id:"q6",icon:"ti-chef-hat",bg:"#FBEAF0",ic:"#72243E",name:"Cuisiner un repas gastronomique",desc:"3 plats pour quelqu'un que tu respectes. Pas de livraison de secours.",story:"Ce jour-là, j'ai compris que cuisiner c'est prendre soin."},
+  {id:"q7",icon:"ti-music",bg:"#EEEDFE",ic:"#3C3489",name:"Assister à un concert de jazz ou classique",desc:"Pas le genre habituel. S'asseoir vraiment écouter.",story:"Je ne savais pas que la musique pouvait être silencieuse."},
+  {id:"q8",icon:"ti-clock",bg:"#FAECE7",ic:"#993C1D",name:"24h sans écran",desc:"Pas de téléphone, ordi, ni télé. Une journée entière.",story:"J'ai redécouvert l'ennui — et ce qu'il produit."},
+  {id:"q9",icon:"ti-messages",bg:"#E6F1FB",ic:"#185FA5",name:"Vraie conversation avec un inconnu",desc:"Dans un train ou un café. Une vraie, pas juste la météo.",story:"Il m'a dit quelque chose que je n'oublierai pas."},
+  {id:"q10",icon:"ti-star",bg:"#E1F5EE",ic:"#0F6E56",name:"Dormir à la belle étoile",desc:"Bivouac, forêt, jardin. Voir les vraies étoiles.",story:"Pour la première fois, j'ai compris pourquoi les anciens regardaient le ciel."},
+  {id:"q11",icon:"ti-heart",bg:"#FBEAF0",ic:"#72243E",name:"Faire du bénévolat une journée",desc:"Donner sans rien attendre en retour.",story:"La gratitude des autres m'a surpris."},
+  {id:"q12",icon:"ti-mail",bg:"#EEEDFE",ic:"#3C3489",name:"Écrire une lettre à soi-même (ouvrir dans 5 ans)",desc:"Ce que tu veux devenir. Fermer l'enveloppe.",story:"Je l'ai écrite un dimanche soir, seul dans ma chambre."},
+  {id:"q13",icon:"ti-plane",bg:"#E6F1FB",ic:"#185FA5",name:"Premier vol en petit avion ou ULM",desc:"Même 30 min. Voir sa ville d'en haut.",story:"En dessous, tout semblait petit. Y compris mes problèmes."},
+  {id:"q14",icon:"ti-book",bg:"#FAECE7",ic:"#993C1D",name:"Lire un livre en anglais de bout en bout",desc:"Sans dictionnaire. Comprendre le flux.",story:"J'ai fini le dernier chapitre dans un café."},
+  {id:"q15",icon:"ti-steering-wheel",bg:"#FAEEDA",ic:"#854F0B",name:"Faire un chrono en karting sur circuit officiel",desc:"Qualification, adversaires, chronomètre.",story:"La première fois que j'ai senti la limite d'adhérence."},
+  {id:"q16",icon:"ti-motorbike",bg:"#FAECE7",ic:"#712B13",name:"Premier trajet moto seul sur route nationale",desc:"Après le permis. Seul, 50+ km.",story:"Le vent, la route, et moi."},
+];
+
+// =============================================
+// NAVIGATION
+// =============================================
+function showPage(p){
+  // hide all pages (including the guides div outside main)
+  document.querySelectorAll('.page, #page-guides').forEach(el=>{
+    el.classList.remove('active');
+    el.style.display='none';
+  });
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const pg = document.getElementById('page-'+p);
+  pg.classList.add('active');
+  pg.style.display='block';
+  document.getElementById('nav-'+p).classList.add('active');
+}
+
+// =============================================
+// TODO
+// =============================================
+function pbHtml(p){
+  if(p==='urgent') return `<span class="pbadge pb-u"><i class="ti ti-alert-circle" style="font-size:9px"></i>Urgent</span>`;
+  if(p==='important') return `<span class="pbadge pb-i"><i class="ti ti-star" style="font-size:9px"></i>Important</span>`;
+  return `<span class="pbadge pb-b"><i class="ti ti-leaf" style="font-size:9px"></i>Bonus</span>`;
+}
+
+function setPrio(p){
+  curPrio=p;
+  document.querySelectorAll('.pf').forEach(b=>{
+    b.classList.remove('on');
+    if((p==='all'&&b.classList.contains('p-all'))||(b.classList.contains('p-'+p))) b.classList.add('on');
+  });
+  document.querySelectorAll('.task-row').forEach(el=>{
+    el.classList.toggle('hidden', p!=='all' && el.dataset.prio!==p);
+  });
+  document.querySelectorAll('.sub-block').forEach(sub=>{
+    const vis = sub.querySelectorAll('.task-row:not(.hidden)').length;
+    sub.style.display = (vis===0 && p!=='all') ? 'none' : '';
+  });
+}
+
+function toggleTask(cid,si,ti){
+  const k=cid+'_'+si+'_'+ti;
+  checked[k]=!checked[k];
+  ss('gu7_ck',checked);
+  document.getElementById('cb_'+k).classList.toggle('done',!!checked[k]);
+  document.getElementById('tl_'+k).classList.toggle('done',!!checked[k]);
+  updateProgress();
+}
+
+function toggleCat(id){
+  const b=document.getElementById('cbody-'+id);
+  const c=document.getElementById('cchev-'+id);
+  const o=b.classList.toggle('open');
+  c.classList.toggle('open',o);
+}
+function toggleSub(cid,si){
+  const k=cid+'_'+si;
+  const t=document.getElementById('stasks-'+k);
+  const c=document.getElementById('schev-'+k);
+  const o=t.classList.toggle('open');
+  c.classList.toggle('open',o);
+}
+
+function updateProgress(){
+  let tot=0,dn=0;
+  CATS.forEach(c=>c.subs.forEach((s,si)=>s.tasks.forEach((_,ti)=>{tot++;if(checked[c.id+'_'+si+'_'+ti])dn++;})));
+  const pct=tot?Math.round(dn/tot*100):0;
+  const circ=2*Math.PI*17;
+  const offset=circ-(pct/100*circ);
+  document.getElementById('ring-fill').style.strokeDashoffset=offset;
+  document.getElementById('ring-val').textContent=pct+'%';
+
+  let u=0,i=0,b=0,ud=0,id=0,bd=0;
+  CATS.forEach(c=>c.subs.forEach((s,si)=>s.tasks.forEach((task,ti)=>{
+    const done=!!checked[c.id+'_'+si+'_'+ti];
+    if(task.p==='urgent'){u++;if(done)ud++;}
+    else if(task.p==='important'){i++;if(done)id++;}
+    else{b++;if(done)bd++;}
+  })));
+  document.getElementById('todo-stats').innerHTML=
+    `<div class="stat-card"><div class="stat-lbl">Urgent</div><div class="stat-val">${ud}<span style="font-size:13px;color:var(--t3);font-weight:400">/${u}</span></div></div>`+
+    `<div class="stat-card"><div class="stat-lbl">Important</div><div class="stat-val">${id}<span style="font-size:13px;color:var(--t3);font-weight:400">/${i}</span></div></div>`+
+    `<div class="stat-card"><div class="stat-lbl">Bonus</div><div class="stat-val">${bd}<span style="font-size:13px;color:var(--t3);font-weight:400">/${b}</span></div></div>`;
+}
+
+function renderTodo(){
+  const cont=document.getElementById('cat-list');
+  cont.innerHTML='';
+  CATS.forEach(cat=>{
+    let tot=0,dn=0;
+    cat.subs.forEach((s,si)=>s.tasks.forEach((_,ti)=>{tot++;if(checked[cat.id+'_'+si+'_'+ti])dn++;}));
+    const pct=tot?Math.round(dn/tot*100):0;
+
+    let subsH='';
+    cat.subs.forEach((sub,si)=>{
+      let sd=0; sub.tasks.forEach((_,ti)=>{if(checked[cat.id+'_'+si+'_'+ti])sd++;});
+      let th='';
+      sub.tasks.forEach((task,ti)=>{
+        const k=cat.id+'_'+si+'_'+ti, ck=!!checked[k];
+        th+=`<div class="task-row" data-prio="${task.p}" onclick="toggleTask('${cat.id}',${si},${ti})">
+          <div class="cb ${ck?'done':''}" id="cb_${k}"><i class="ti ti-check"></i></div>
+          <div style="flex:1">
+            <div class="task-txt ${ck?'done':''}" id="tl_${k}">${task.t} ${pbHtml(task.p)}</div>
+            ${task.d?`<div class="task-detail">${task.d}</div>`:''}
+          </div>
+        </div>`;
+      });
+      subsH+=`<div class="sub-block">
+        <div class="sub-head" onclick="toggleSub('${cat.id}',${si})">
+          <i class="ti ti-list" style="font-size:13px;color:var(--t3)"></i>
+          <span class="sub-name">${sub.label}</span>
+          <span class="sub-cnt">${sd}/${sub.tasks.length}</span>
+          <i class="ti ti-chevron-down sub-chev" id="schev-${cat.id}_${si}"></i>
+        </div>
+        <div class="task-list" id="stasks-${cat.id}_${si}">${th}</div>
+      </div>`;
+    });
+
+    const div=document.createElement('div');
+    div.className='cat-block';
+    div.innerHTML=`
+      <div class="cat-head" onclick="toggleCat('${cat.id}')">
+        <div class="cat-ico" style="background:${cat.bg}"><i class="ti ${cat.icon}" style="color:${cat.ic};font-size:16px"></i></div>
+        <div class="cat-info">
+          <div class="cat-name">${cat.label}</div>
+          <div class="cat-prog">${dn} / ${tot} tâches</div>
+        </div>
+        <div class="cat-prog-bar"><div class="cat-prog-fill" style="width:${pct}%"></div></div>
+        <i class="ti ti-chevron-down chev" id="cchev-${cat.id}"></i>
+      </div>
+      <div class="cat-body" id="cbody-${cat.id}">${subsH}</div>
+    `;
+    cont.appendChild(div);
+  });
+  updateProgress();
+}
+
+// =============================================
+// DAILY
+// =============================================
+function getStreak(hid){
+  let s=0,d=new Date(TODAY);
+  while(true){
+    const k=d.toISOString().slice(0,10);
+    if(dLog[hid]&&dLog[hid][k]){s++;d.setDate(d.getDate()-1);}
+    else break;
+  }
+  return s;
+}
+function toggleDay(hid,dk){
+  if(!dLog[hid])dLog[hid]={};
+  if(dLog[hid][dk])delete dLog[hid][dk];
+  else dLog[hid][dk]=true;
+  ss('gu7_dl',dLog);
+  renderDaily();
+}
+function setDailyView(v){
+  dailyView=v;
+  document.getElementById('vb-week').classList.toggle('active',v==='week');
+  document.getElementById('vb-month').classList.toggle('active',v==='month');
+  renderDaily();
+}
+function prevM(){calM.setMonth(calM.getMonth()-1);renderDaily();}
+function nextM(){const n=new Date(calM);n.setMonth(n.getMonth()+1);if(n<=TODAY){calM=n;renderDaily();}}
+
+function renderDaily(){
+  const DAY_SHORT=['L','M','M','J','V','S','D'];
+  const DAY_FULL=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+
+  const week=[];
+  for(let i=6;i>=0;i--){const d=new Date(TODAY);d.setDate(d.getDate()-i);week.push(d);}
+
+  let todayDone=0;
+  DAILY.forEach(h=>{if(dLog[h.id]&&dLog[h.id][TK])todayDone++;});
+  let bestStreak=0;
+  DAILY.forEach(h=>{const s=getStreak(h.id);if(s>bestStreak)bestStreak=s;});
+  let total=0;
+  DAILY.forEach(h=>{if(dLog[h.id])total+=Object.keys(dLog[h.id]).length;});
+
+  document.getElementById('daily-stats').innerHTML=
+    `<div class="stat-card"><div class="stat-lbl">Aujourd'hui</div><div class="stat-val">${todayDone}<span style="font-size:13px;color:var(--t3);font-weight:400">/${DAILY.length}</span></div></div>`+
+    `<div class="stat-card"><div class="stat-lbl">Meilleur streak</div><div class="stat-val">${bestStreak}<span style="font-size:13px;color:var(--t3);font-weight:400">j</span></div></div>`+
+    `<div class="stat-card"><div class="stat-lbl">Total coches</div><div class="stat-val">${total}</div></div>`;
+
+  let html='';
+  if(dailyView==='week'){
+    DAILY.forEach(h=>{
+      const str=getStreak(h.id);
+      let dots='';
+      week.forEach(d=>{
+        const dk=d.toISOString().slice(0,10);
+        const isTd=dk===TK;
+        const done=dLog[h.id]&&dLog[h.id][dk];
+        const dn=d.getDay();
+        const dl=DAY_FULL[dn===0?6:dn-1];
+        dots+=`<div class="day-col" onclick="toggleDay('${h.id}','${dk}')">
+          <div class="day-lbl">${dl}</div>
+          <div class="day-dot ${done?'done':''} ${isTd?'today':''}">${done?'<i class="ti ti-check" style="font-size:10px"></i>':d.getDate()}</div>
+        </div>`;
+      });
+      html+=`<div class="habit-card">
+        <div class="habit-head">
+          <div class="habit-ico" style="background:${h.bg}"><i class="ti ${h.icon}" style="color:${h.ic};font-size:15px"></i></div>
+          <div style="flex:1">
+            <div class="habit-name">${h.label}</div>
+            ${h.tip?`<div style="font-size:11px;color:var(--t3);margin-top:1px">${h.tip}</div>`:''}
+          </div>
+          ${str>0?`<span class="streak-badge"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${str}j</span>`:''}
+        </div>
+        <div class="week-grid">${dots}</div>
+      </div>`;
+    });
+  } else {
+    const y=calM.getFullYear(),m=calM.getMonth();
+    const dim=new Date(y,m+1,0).getDate();
+    const fdow=new Date(y,m,1).getDay();
+    const off=fdow===0?6:fdow-1;
+    const MN=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+    DAILY.forEach(h=>{
+      const str=getStreak(h.id);
+      let g='';
+      DAY_SHORT.forEach(d=>{g+=`<div class="mgd-lbl">${d}</div>`;});
+      for(let i=0;i<off;i++) g+=`<div></div>`;
+      for(let d=1;d<=dim;d++){
+        const dk=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const fut=new Date(dk)>TODAY;
+        const done=dLog[h.id]&&dLog[h.id][dk];
+        const isTd=dk===TK;
+        g+=`<div class="mgd ${done?'done':''} ${isTd?'today-m':''} ${fut?'fut':''}" onclick="${fut?'':("toggleDay('"+h.id+"','"+dk+"')")}">
+          ${done?'<i class="ti ti-check" style="font-size:7px"></i>':d}
+        </div>`;
+      }
+      html+=`<div class="habit-card">
+        <div class="habit-head">
+          <div class="habit-ico" style="background:${h.bg}"><i class="ti ${h.icon}" style="color:${h.ic};font-size:15px"></i></div>
+          <div style="flex:1">
+            <div class="habit-name">${h.label}</div>
+            ${h.tip?`<div style="font-size:11px;color:var(--t3);margin-top:1px">${h.tip}</div>`:''}
+          </div>
+          ${str>0?`<span class="streak-badge"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${str}j</span>`:''}
+        </div>
+        <div class="month-nav">
+          <button class="month-btn" onclick="prevM()">‹</button>
+          <span>${MN[m]} ${y}</span>
+          <button class="month-btn" onclick="nextM()">›</button>
+        </div>
+        <div class="month-grid">${g}</div>
+      </div>`;
+    });
+  }
+  document.getElementById('daily-habits').innerHTML=html;
+}
+
+// =============================================
+// SPORTS
+// =============================================
+function toggleSport(sid,idx){
+  const k='sp_'+sid+'_'+idx;
+  sDone[k]=!sDone[k];
+  ss('gu7_sd',sDone);
+  document.getElementById('scb_'+k).classList.toggle('done',!!sDone[k]);
+  document.getElementById('stl_'+k).classList.toggle('done',!!sDone[k]);
+}
+
+function renderSports(){
+  let html=`<div style="background:linear-gradient(135deg,var(--g-light),#D4F0E4);border:1px solid #5DCAA5;border-radius:var(--r);padding:16px;margin-bottom:14px">
+    <div style="font-size:13px;font-weight:600;color:var(--g2);margin-bottom:4px;display:flex;align-items:center;gap:6px"><i class="ti ti-run" style="font-size:16px"></i> Sortie longue hebdomadaire</div>
+    <div style="font-size:12px;color:var(--g2);line-height:1.5;margin-bottom:10px">Chaque semaine, 1 sortie cardio longue (+45 min). Coche dans l'onglet Quotidien. Varie les disciplines.</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:#fff;border:1px solid var(--g);color:var(--g2);font-weight:500">🏃 Course</span>
+      <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:#fff;border:1px solid var(--g);color:var(--g2);font-weight:500">🏊 Natation</span>
+      <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:#fff;border:1px solid var(--g);color:var(--g2);font-weight:500">🚴 Vélo</span>
+      <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:#fff;border:1px solid var(--g);color:var(--g2);font-weight:500">🥾 Rando</span>
+      <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:#fff;border:1px solid var(--g);color:var(--g2);font-weight:500">🛶 Kayak</span>
+    </div>
+  </div>`;
+  SPORTS.forEach(s=>{
+    let steps='';
+    s.steps.forEach((st,i)=>{
+      const k='sp_'+s.id+'_'+i, ck=!!sDone[k];
+      steps+=`<div class="sport-step" onclick="toggleSport('${s.id}',${i})">
+        <div class="cb ${ck?'done':''}" id="scb_${k}" style="margin-top:3px"><i class="ti ti-check"></i></div>
+        <div>
+          <div class="task-txt ${ck?'done':''}" id="stl_${k}">${st.t} ${pbHtml(st.p)}</div>
+          ${st.d?`<div class="task-detail">${st.d}</div>`:''}
+        </div>
+      </div>`;
+    });
+    html+=`<div class="sport-card">
+      <div class="sport-top">
+        <div class="sport-ico" style="background:${s.bg}"><i class="ti ${s.icon}" style="color:${s.ic};font-size:18px"></i></div>
+        <span class="sport-name">${s.name}</span>
+        <span class="level-tag" style="background:${s.tagBg};color:${s.tagC}">${s.tag}</span>
+      </div>
+      <div class="sport-why">${s.why}</div>
+      <div class="sport-steps">${steps}</div>
+    </div>`;
+  });
+  document.getElementById('sports-content').innerHTML=html;
+}
+
+// =============================================
+// QUESTS
+// =============================================
+function toggleQuest(id){
+  qDone[id]=!qDone[id];
+  ss('gu7_qd',qDone);
+  renderQuests();
+}
+function renderQuests(){
+  const dn=Object.values(qDone).filter(Boolean).length;
+  document.getElementById('quest-count').textContent=`${dn} / ${QUESTS.length} quêtes accomplies`;
+  let html='';
+  QUESTS.forEach(q=>{
+    const done=!!qDone[q.id];
+    html+=`<div class="quest-card ${done?'done-q':''}">
+      <div class="quest-top">
+        <div class="quest-ico" style="background:${q.bg}"><i class="ti ${q.icon}" style="color:${q.ic};font-size:16px"></i></div>
+        <div class="quest-info">
+          <div class="quest-name">${q.name}</div>
+          <div class="quest-desc">${q.desc}</div>
+        </div>
+        <button class="quest-btn ${done?'done':''}" onclick="toggleQuest('${q.id}')">
+          ${done?'<i class="ti ti-check" style="font-size:11px;vertical-align:-1px"></i> Fait':'Marquer fait'}
+        </button>
+      </div>
+      ${done?`<div class="quest-story"><i class="ti ti-quote" style="font-size:11px;vertical-align:-1px;margin-right:4px"></i>${q.story}</div>`:''}
+    </div>`;
+  });
+  document.getElementById('quests-list').innerHTML=html;
+}
+
+// =============================================
+// GUIDES
+// =============================================
+let curGuide = 'skin';
+function setGuide(g){
+  curGuide=g;
+  ['skin','gym','stretch','lang'].forEach(x=>{
+    const btn=document.getElementById('gt-'+x);
+    const panel=document.getElementById('guide-'+x);
+    const isActive=x===g;
+    btn.classList.toggle('on',isActive);
+    btn.classList.toggle('p-all',isActive);
+    panel.style.display=isActive?'block':'none';
+  });
+}
+
+const SKIN_DATA={
+  type:"Peau mixte / parfois sèche",
+  tip:"Zone T → produits légers (gel). Joues → produits plus riches. Ne jamais frotter avec la serviette — tapoter.",
+  matin:[
+    {step:"1. Nettoyant",products:[
+      {name:"Mousse Nettoyante Hydratante",brand:"CeraVe",price:"12€",tag:"Essentiel",tagBg:"#E1F5EE",tagC:"#085041",why:"Nettoie sans dessécher. Céramides pour la barrière cutanée — parfait peau mixte/sèche."},
+      {name:"Toleriane Gel Moussant",brand:"La Roche-Posay",price:"10€",tag:"Sensible",tagBg:"#E6F1FB",tagC:"#185FA5",why:"Ultra doux, sans parfum. Idéal si ta peau tire après le lavage."},
+    ]},
+    {step:"2. Sérum Vitamine C",products:[
+      {name:"Vitamine C Crème Sorbet Hydratante Booster d'Éclat",brand:"GARNIER",price:"8€",tag:"Ton choix ✓",tagBg:"#E1F5EE",tagC:"#085041",why:"Ton produit déjà choisi. Antioxydant, anti-taches, éclat. S'applique après nettoyant, avant hydratant."},
+      {name:"Sérum Vitamine C Pure 10%",brand:"Garnier SkinActive",price:"12€",tag:"Version sérum",tagBg:"#FAEEDA",tagC:"#633806",why:"Version sérum concentrée — plus ciblée sur les taches et pores de la zone T."},
+    ]},
+    {step:"3. Hydratant",products:[
+      {name:"Double Repair Face Moisturizer SPF30",brand:"CeraVe",price:"18€",tag:"SPF inclus ✓",tagBg:"#E1F5EE",tagC:"#085041",why:"Hydratant + SPF en un produit. Idéal peau mixte. Ne graisse pas la zone T."},
+      {name:"Hydra Genius Gel-Crème",brand:"L'Oréal Paris",price:"10€",tag:"Légèreté",tagBg:"#E6F1FB",tagC:"#185FA5",why:"Texture gel légère. Si tu te sens gras le midi, prends celui-là plutôt."},
+    ]},
+    {step:"4. SPF (si pas dans l'hydratant)",products:[
+      {name:"Anthelios Invisible Fluid SPF50+",brand:"La Roche-Posay",price:"20€",tag:"Must-have",tagBg:"#FCEBEB",tagC:"#A32D2D",why:"Le SPF = le meilleur produit anti-âge. Fini invisible, se porte sous tout. Toujours en dernier."},
+    ]},
+  ],
+  soir:[
+    {step:"1. Nettoyant (même que matin)",products:[
+      {name:"Même nettoyant que le matin",brand:"CeraVe ou La Roche-Posay",price:"—",tag:"Simple",tagBg:"#E6F1FB",tagC:"#185FA5",why:"Pas besoin de deux nettoyants. Double cleansing (huile+mousse) uniquement si crème solaire lourde."},
+    ]},
+    {step:"2. Exfoliant (2-3×/semaine)",products:[
+      {name:"Effaclar Micro-Peeling Lotion",brand:"La Roche-Posay",price:"15€",tag:"Budget",tagBg:"#E1F5EE",tagC:"#085041",why:"BHA (acide salicylique) pour la zone T et les pores. Excellent rapport qualité-prix."},
+      {name:"Ultra Facial Toner",brand:"Kiehl's",price:"28€",tag:"Premium",tagBg:"#FAEEDA",tagC:"#633806",why:"Acide lactique et PHA — exfoliation douce sans irriter les zones sèches."},
+    ]},
+    {step:"3. Hydratant nuit (plus riche que le matin)",products:[
+      {name:"Moisturising Cream (pot)",brand:"CeraVe",price:"14€",tag:"Essentiel",tagBg:"#E1F5EE",tagC:"#085041",why:"Crème riche céramides pour la nuit. Répare la barrière cutanée pendant le sommeil."},
+      {name:"Nuit Récupératrice Revitalift",brand:"L'Oréal Paris",price:"15€",tag:"Anti-âge doux",tagBg:"#EEEDFE",tagC:"#3C3489",why:"Rétinol faible dose. Commence 1-2x/semaine pour habituer la peau."},
+    ]},
+  ]
+};
+
+const GYM_DATA={
+  profil:"1m87 / 65kg — ectomorphe, objectif prise de masse",
+  note:"Métabolisme rapide = difficile de prendre du poids. Priorité : MANGER PLUS (2800-3200 kcal/j, 130g de protéines/j) + lever lourd en multi-articulaire. Ajoute du poids ou des reps chaque semaine — c'est obligatoire.",
+  days:[
+    {name:"Lundi — Push (Pectoraux, Épaules, Triceps)",bg:"#FCEBEB",ic:"#A32D2D",exercises:[
+      {name:"Développé couché barre",sets:"4 × 6-8",tip:"Contrôle excentrique 3s. +2.5kg/semaine."},
+      {name:"Développé incliné haltères",sets:"3 × 8-10",tip:"45° d'inclinaison. Coudes à 45° du corps."},
+      {name:"Développé militaire barre",sets:"3 × 8-10",tip:"Debout ou assis. Core gaîné. Pas de cambrure."},
+      {name:"Élévations latérales haltères",sets:"3 × 12-15",tip:"Poids léger, contrôle total. Coudes légèrement fléchis."},
+      {name:"Dips lestés",sets:"3 × 8-10",tip:"Ajoute du poids si trop facile. Descend jusqu'à 90°."},
+      {name:"Extension triceps poulie haute",sets:"3 × 12",tip:"Coudes fixes. Squeeze en bas."},
+    ]},
+    {name:"Mercredi — Pull (Dos, Biceps)",bg:"#E6F1FB",ic:"#185FA5",exercises:[
+      {name:"Tractions pronation lestées",sets:"4 × 6-8",tip:"Grand gabarit : amplitude complète, descente contrôlée."},
+      {name:"Rowing barre pronation",sets:"4 × 6-8",tip:"Dos horizontal, tirage vers le nombril."},
+      {name:"Tirage vertical prise neutre",sets:"3 × 10",tip:"Tire vers la poitrine, coudes vers le bas."},
+      {name:"Rowing haltère unilatéral",sets:"3 × 10",tip:"Appui sur banc. Amplitude complète."},
+      {name:"Curl barre EZ",sets:"3 × 10-12",tip:"Coudes fixes. Squeeze en haut."},
+      {name:"Curl haltères marteau",sets:"3 × 12",tip:"Travaille le brachial. Bras longs = brachial visible."},
+    ]},
+    {name:"Vendredi — Legs (Cuisses, Fessiers, Mollets)",bg:"#E1F5EE",ic:"#0F6E56",exercises:[
+      {name:"Squat barre",sets:"4 × 6-8",tip:"Grand gabarit : stance plus large, pieds ouverts. Sous le parallèle."},
+      {name:"Presse à cuisses",sets:"3 × 10-12",tip:"Pieds hauts = ischio + fessiers."},
+      {name:"Leg curl couché",sets:"3 × 10-12",tip:"Ischio souvent négligés. Prévient les blessures."},
+      {name:"Fentes marchées haltères",sets:"3 × 12/côté",tip:"Grand pas, genou arrière frôle le sol."},
+      {name:"Mollets debout à la presse",sets:"4 × 15-20",tip:"Volume élevé + amplitude maximale. Mollets difficiles pour grand gabarit."},
+      {name:"Hip thrust barre",sets:"3 × 12",tip:"Haut du dos sur banc. Peak contraction 1s en haut."},
+    ]},
+    {name:"Jeudi (optionnel) — Full Body léger",bg:"#EEEDFE",ic:"#3C3489",exercises:[
+      {name:"Deadlift roumain",sets:"3 × 10",tip:"Maintient les ischio + bas du dos."},
+      {name:"Dips ou pompes lestées",sets:"3 × max",tip:"Entretien pectoraux + triceps."},
+      {name:"Tractions supination",sets:"3 × max",tip:"Plus accessible que pronation. Biceps + dos."},
+      {name:"Gainage planche + côtés",sets:"3 × 45s",tip:"Core stability. Grand gabarit = core crucial pour le dos."},
+    ]},
+  ]
+};
+
+const STRETCH_DATA=[
+  {name:"Ouverture des hanches (pigeon)",dur:"60s/côté",tip:"Genou avant à 90°. Grand gabarit : hanches souvent très raides."},
+  {name:"Étirement ischio-jambiers debout",dur:"45s/côté",tip:"Jambe sur surface à hauteur de hanches, buste en avant dos droit."},
+  {name:"Étirement psoas (fente basse)",dur:"60s/côté",tip:"Genou arrière au sol, hanches poussées en avant. Annule les heures assis."},
+  {name:"Rotation thoracique (quadrupédie)",dur:"10 reps/côté",tip:"4 pattes : main derrière la tête, rotation vers le ciel."},
+  {name:"Étirement pectoraux (porte)",dur:"45s/côté",tip:"Bras en L contre une porte. Compense le développé couché."},
+  {name:"Flexion cervicale latérale",dur:"30s/côté",tip:"Oreille vers l'épaule, bras opposé tendu vers le bas."},
+  {name:"Mobilité cheville (cercles)",dur:"10 cercles/sens",tip:"Cercles avec le pied. Chevilles importantes pour les squats."},
+  {name:"World's greatest stretch",dur:"5 reps/côté",tip:"Fente avant, main intérieure au sol, rotation thoracique. L'étirement le plus complet."},
+  {name:"Cat-cow (dos)",dur:"10 cycles lents",tip:"Quadrupédie : dos rond puis creux lentement. Libère les vertèbres après muscu."},
+  {name:"Étirement mollets (mur)",dur:"45s/côté",tip:"Pied contre mur, jambe tendue. Puis jambe fléchie (soléaire). Tendons d'Achille souvent raides."},
+];
+
+const LANG_DATA=[
+  {name:"Anglais",flag:"🇬🇧",level:"C1+ — Maîtrisé",status:"Maintenir",statusBg:"#E1F5EE",statusC:"#085041",
+   desc:"Tu es déjà très à l'aise. L'enjeu : ne pas perdre ce niveau par manque de pratique passive.",
+   resources:["Podcasts VO (Huberman, Lex Fridman)","Séries/films sans sous-titres","1 article longform/semaine","Penser en anglais au quotidien"]},
+  {name:"Italien",flag:"🇮🇹",level:"Débutant → A2 en cours",status:"Priorité n°1",statusBg:"#FCEBEB",statusC:"#A32D2D",
+   desc:"Duolingo quotidien est une bonne base. Pour accélérer : Babbel pour la grammaire + immersion audio dès que possible.",
+   resources:["Duolingo quotidien ✓","Babbel (grammaire)","Podcast 'Coffee Break Italian'","Séries : Suburra, Gomorra (VO)","Objectif : A2 en 6 mois"]},
+  {name:"Espagnol",flag:"🇪🇸",level:"B1 — Intermédiaire",status:"Maintenir",statusBg:"#FAEEDA",statusC:"#633806",
+   desc:"Ne pas perdre ce niveau. Pas besoin d'intensité — juste de la pratique régulière passive.",
+   resources:["La Casa de Papel (VO)","Podcast 'Español con Juan'","Anki 10 mots 2×/semaine","Objectif : conserver B1"]},
+  {name:"Portugais",flag:"🇧🇷",level:"Pas encore commencé",status:"Après l'italien (A2)",statusBg:"#EEEDFE",statusC:"#3C3489",
+   desc:"Commence le portugais APRÈS l'A2 en italien. Les deux langues sont très proches — confusion garantie si simultanées. Vise le brésilien (plus de ressources).",
+   resources:["Duolingo brésilien","Brasilito sur YouTube","Podcast 'PortuguesePod101'","Série : 3% sur Netflix","Objectif : A2 en 8 mois"]},
+];
+
+function renderGuides(){
+  // SKINCARE
+  let skinH=`<div style="background:var(--g-light);border-left:3px solid var(--g);border-radius:var(--r2);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--g2)">${SKIN_DATA.tip}</div>`;
+  skinH+=`<div style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">☀️ Routine matin</div>`;
+  SKIN_DATA.matin.forEach(step=>{
+    skinH+=`<div style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px">${step.step}</div>`;
+    step.products.forEach(p=>{
+      skinH+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px">
+        <span style="font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600;flex-shrink:0;margin-top:2px;background:${p.tagBg};color:${p.tagC}">${p.tag}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600;color:var(--t1)">${p.name}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:1px">${p.brand}</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:3px;line-height:1.45">${p.why}</div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--g);white-space:nowrap;flex-shrink:0;margin-top:2px">${p.price}</div>
+      </div>`;
+    });
+    skinH+=`</div>`;
+  });
+  skinH+=`<div style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;margin-top:4px">🌙 Routine soir</div>`;
+  SKIN_DATA.soir.forEach(step=>{
+    skinH+=`<div style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px">${step.step}</div>`;
+    step.products.forEach(p=>{
+      skinH+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px">
+        <span style="font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600;flex-shrink:0;margin-top:2px;background:${p.tagBg};color:${p.tagC}">${p.tag}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600;color:var(--t1)">${p.name}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:1px">${p.brand}</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:3px;line-height:1.45">${p.why}</div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--g);white-space:nowrap;flex-shrink:0;margin-top:2px">${p.price}</div>
+      </div>`;
+    });
+    skinH+=`</div>`;
+  });
+  document.getElementById('guide-skin').innerHTML=skinH;
+
+  // GYM
+  let gymH=`<div style="background:var(--g-light);border-left:3px solid var(--g);border-radius:var(--r2);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--g2)"><strong>${GYM_DATA.profil}</strong><br>${GYM_DATA.note}</div>`;
+  GYM_DATA.days.forEach(day=>{
+    gymH+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border)">
+        <div style="width:32px;height:32px;border-radius:8px;background:${day.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-barbell" style="color:${day.ic};font-size:16px"></i></div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1)">${day.name}</div>
+      </div>
+      <div style="padding:4px 14px 10px">`;
+    day.exercises.forEach((ex,i)=>{
+      gymH+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)${i===day.exercises.length-1?';border-bottom:none':''}">
+        <div style="width:20px;height:20px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--t2);flex-shrink:0">${i+1}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:500;color:var(--t1)">${ex.name}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:1px">${ex.tip}</div>
+        </div>
+        <div style="font-size:11px;color:var(--t2);white-space:nowrap">${ex.sets}</div>
+      </div>`;
+    });
+    gymH+=`</div></div>`;
+  });
+  document.getElementById('guide-gym').innerHTML=gymH;
+
+  // STRETCH
+  let strH=`<div style="background:var(--g-light);border-left:3px solid var(--g);border-radius:var(--r2);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--g2)">Routine 10-15 min, chaque soir ou après la musculation. Spéciale grand gabarit (1m87) — amplitude et mobilité.</div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden"><div style="padding:4px 14px 10px">`;
+  STRETCH_DATA.forEach((s,i)=>{
+    strH+=`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)${i===STRETCH_DATA.length-1?';border-bottom:none':''}">
+      <div style="width:20px;height:20px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--t2);flex-shrink:0">${i+1}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:500;color:var(--t1)">${s.name}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">${s.tip}</div>
+      </div>
+      <div style="font-size:11px;color:var(--t2);white-space:nowrap">${s.dur}</div>
+    </div>`;
+  });
+  strH+=`</div></div>`;
+  document.getElementById('guide-stretch').innerHTML=strH;
+
+  // LANGUES
+  let langH='';
+  LANG_DATA.forEach(l=>{
+    langH+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="font-size:24px;line-height:1">${l.flag}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600;color:var(--t1)">${l.name}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:1px">${l.level}</div>
+        </div>
+        <span style="font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;background:${l.statusBg};color:${l.statusC}">${l.status}</span>
+      </div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:8px">${l.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        ${l.resources.map(r=>`<span style="font-size:10px;padding:3px 8px;border-radius:20px;background:var(--bg);border:1px solid var(--border);color:var(--t2)">${r}</span>`).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('guide-lang').innerHTML=langH;
+}
+
+// =============================================
+// INIT
+// =============================================
+renderTodo();
+renderDaily();
+renderSports();
+renderQuests();
+renderGuides();
+</script>
+</body>
+</html>
